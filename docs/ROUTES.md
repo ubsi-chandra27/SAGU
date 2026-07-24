@@ -1,0 +1,301 @@
+# Routes
+
+## Daftar Route SAGU
+
+Dokumen ini mendefinisikan route API dan route frontend untuk aplikasi SAGU. Semua route API menggunakan prefiks `/api/v1`. Route dilindungi oleh middleware autentikasi dan otorisasi RBAC.
+
+## Konvensi Penamaan
+
+- Route menggunakan Bahasa Inggris dengan kebiasaan kecil kata (lowercase).
+- Kata pemisah antar segmen menggunakan tanda hubung (`-`).
+- Route RESTful mengikuti pola CRUD standar.
+- Route dilindungi oleh middleware autentikasi kecuali route publik (login, register).
+
+## Route Publik
+
+### Autentikasi
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| POST | `/api/v1/auth/login` | Masuk dengan username dan password | Publik |
+| POST | `/api/v1/auth/logout` | Keluar dari sesi | Autentikasi |
+| POST | `/api/v1/auth/refresh` | Refresh token sesi | Autentikasi |
+| GET | `/api/v1/auth/me` | Dapatkan informasi pengguna saat ini | Autentikasi |
+| POST | `/api/v1/auth/forgot-password` | Minta reset password | Publik |
+| POST | `/api/v1/auth/reset-password` | Reset password dengan token | Publik |
+
+## Route Dashboard
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/dashboard/admin` | Ringkasan dashboard admin | Admin |
+| GET | `/api/v1/dashboard/guru` | Ringkasan dashboard guru | Guru |
+| GET | `/api/v1/dashboard/wali-kelas` | Ringkasan dashboard wali kelas | Wali Kelas |
+| GET | `/api/v1/dashboard/siswa` | Ringkasan dashboard siswa | Siswa |
+| GET | `/api/v1/dashboard/orang-tua` | Ringkasan dashboard orang tua | Orang Tua |
+
+## Route Data Master
+
+### Guru
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/data/guru` | Daftar guru | Admin, Guru |
+| GET | `/api/v1/data/guru/:id` | Detail guru | Admin, Guru |
+| POST | `/api/v1/data/guru` | Buat guru baru | Admin |
+| PUT | `/api/v1/data/guru/:id` | Perbarui guru | Admin |
+| DELETE | `/api/v1/data/guru/:id` | Hapus lunak guru | Admin |
+| GET | `/api/v1/data/guru/export` | Ekspor data guru | Admin |
+
+### Siswa
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/data/siswa` | Daftar siswa | Admin, Guru, Wali Kelas, Siswa |
+| GET | `/api/v1/data/siswa/:id` | Detail siswa | Admin, Guru, Wali Kelas, Siswa |
+| POST | `/api/v1/data/siswa` | Buat siswa baru | Admin |
+| PUT | `/api/v1/data/siswa/:id` | Perbarui siswa | Admin |
+| DELETE | `/api/v1/data/siswa/:id` | Hapus lunak siswa | Admin |
+| GET | `/api/v1/data/siswa/export` | Ekspor data siswa | Admin |
+
+### Orang Tua
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/data/orang-tua` | Daftar orang tua | Admin |
+| GET | `/api/v1/data/orang-tua/:id` | Detail orang tua | Admin |
+| POST | `/api/v1/data/orang-tua` | Buat akun orang tua | Admin |
+| PUT | `/api/v1/data/orang-tua/:id` | Perbarui orang tua | Admin |
+| DELETE | `/api/v1/data/orang-tua/:id` | Hapus lunak orang tua | Admin |
+
+### Tahun Ajaran
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/tahun-ajaran` | Daftar tahun ajaran | Semua Role |
+| GET | `/api/v1/tahun-ajaran/:id` | Detail tahun ajaran | Semua Role |
+| POST | `/api/v1/tahun-ajaran` | Buat tahun ajaran baru | Admin |
+| PUT | `/api/v1/tahun-ajaran/:id` | Perbarui tahun ajaran | Admin |
+| DELETE | `/api/v1/tahun-ajaran/:id` | Hapus lunak tahun ajaran | Admin |
+
+### Semester
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/semester` | Daftar semester | Semua Role |
+| GET | `/api/v1/semester/:id` | Detail semester | Semua Role |
+| POST | `/api/v1/semester` | Buat semester baru | Admin |
+| PUT | `/api/v1/semester/:id` | Perbarui semester | Admin |
+| DELETE | `/api/v1/semester/:id` | Hapus lunak semester | Admin |
+
+### Kelas
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/kelas` | Daftar kelas | Admin, Guru, Wali Kelas |
+| GET | `/api/v1/kelas/:id` | Detail kelas | Admin, Guru, Wali Kelas |
+| POST | `/api/v1/kelas` | Buat kelas baru | Admin |
+| PUT | `/api/v1/kelas/:id` | Perbarui kelas | Admin |
+| DELETE | `/api/v1/kelas/:id` | Hapus lunak kelas | Admin |
+
+### Rombel
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/rombel` | Daftar rombel (terbatas pada rombel yang ditugaskan) | Guru (rombel mengajarnya), Wali Kelas (rombelnya), Siswa (rombelnya) |
+| GET | `/api/v1/rombel/:id` | Detail rombel | Admin, Guru (rombelnya), Wali Kelas (rombelnya) |
+| POST | `/api/v1/rombel` | Buat rombel baru | Admin |
+| PUT | `/api/v1/rombel/:id` | Perbarui rombel | Admin |
+| DELETE | `/api/v1/rombel/:id` | Hapus lunak rombel | Admin |
+| PUT | `/api/v1/rombel/:id/wali-kelas` | Tugaskan wali kelas | Admin |
+
+### Mata Pelajaran
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/mata-pelajaran` | Daftar mata pelajaran | Semua Role |
+| GET | `/api/v1/mata-pelajaran/:id` | Detail mata pelajaran | Semua Role |
+| POST | `/api/v1/mata-pelajaran` | Buat mata pelajaran baru | Admin |
+| PUT | `/api/v1/mata-pelajaran/:id` | Perbarui mata pelajaran | Admin |
+| DELETE | `/api/v1/mata-pelajaran/:id` | Hapus lunak mata pelajaran | Admin |
+
+## Route Penugasan
+
+### Penugasan Mengajar
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/penugasan/mengajar` | Daftar penugasan mengajar | Admin, Guru |
+| GET | `/api/v1/penugasan/mengajar/:id` | Detail penugasan | Admin, Guru |
+| POST | `/api/v1/penugasan/mengajar` | Buat penugasan baru | Admin |
+| PUT | `/api/v1/penugasan/mengajar/:id` | Perbarui penugasan | Admin |
+| DELETE | `/api/v1/penugasan/mengajar/:id` | Hapus penugasan | Admin |
+
+### Penugasan Wali Kelas
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/penugasan/wali-kelas` | Daftar penugasan wali kelas | Admin |
+| POST | `/api/v1/penugasan/wali-kelas` | Buat penugasan wali kelas | Admin |
+| DELETE | `/api/v1/penugasan/wali-kelas/:id` | Hapus penugwal wali kelas | Admin |
+
+## Route Absensi
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/absensi` | Daftar absensi | Guru, Wali Kelas, Siswa, Orang Tua (terbatas) |
+| GET | `/api/v1/absensi/:id` | Detail absensi | Guru, Wali Kelas, Siswa, Orang Tua (terbatas) |
+| POST | `/api/v1/absensi` | Catat absensi | Guru |
+| PUT | `/api/v1/absensi/:id` | Perbarui absensi | Guru |
+| DELETE | `/api/v1/absensi/:id` | Hapus absensi | Guru |
+| GET | `/api/v1/absensi/rekap` | Rekap absensi | Guru, Wali Kelas, Admin |
+
+## Route Agenda Mengajar
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/agenda` | Daftar agenda mengajar | Guru, Wali Kelas, Siswa |
+| GET | `/api/v1/agenda/:id` | Detail agenda | Guru (mengajarnya), Wali Kelas (rombelnya), Siswa (rombelnya) |
+| POST | `/api/v1/agenda` | Buat agenda baru | Guru |
+| PUT | `/api/v1/agenda/:id` | Perbarui agenda | Guru (miliknya) |
+| DELETE | `/api/v1/agenda/:id` | Hapus agenda | Guru (miliknya) |
+
+## Route Penilaian dan Leger
+
+### Nilai
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/leger` | Daftar nilai / leger | Admin, Guru, Wali Kelas, Siswa, Orang Tua (terbatas) |
+| GET | `/api/v1/leger/:id` | Detail nilai | Admin, Guru, Wali Kelas, Siswa, Orang Tua (terbatas) |
+| POST | `/api/v1/leger` | Input nilai | Guru |
+| PUT | `/api/v1/leger/:id` | Perbarui nilai | Guru |
+| DELETE | `/api/v1/leger/:id` | Hapus nilai | Guru |
+| GET | `/api/v1/leger/rekap` | Rekap nilai per rombel | Guru, Wali Kelas, Admin |
+
+### Komponen Penilaian
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/leger/komponen` | Daftar komponen penilaian | Admin, Guru |
+| POST | `/api/v1/leger/komponen` | Buat komponen penilaian | Admin |
+| PUT | `/api/v1/leger/komponen/:id` | Perbarui komponen penilaian | Admin |
+| DELETE | `/api/v1/leger/komponen/:id` | Hapus komponen penilaian | Admin |
+
+## Route Laporan
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/laporan/guru` | Laporan data guru | Admin |
+| GET | `/api/v1/laporan/siswa` | Laporan data siswa | Admin |
+| GET | `/api/v1/laporan/absensi` | Laporan absensi | Admin, Guru, Wali Kelas |
+| GET | `/api/v1/laporan/leger` | Laporan leger | Admin, Guru, Wali Kelas |
+| GET | `/api/v1/laporan/export` | Ekspor laporan | Admin, Guru, Wali Kelas |
+
+## Route Pengaturan
+
+### Pengaturan Sekolah
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/pengaturan` | Dapatkan pengaturan sekolah | Semua Role |
+| PUT | `/api/v1/pengaturan` | Perbarui pengaturan sekolah | Admin |
+
+### Manajemen Pengguna
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/pengguna` | Daftar pengguna | Admin |
+| GET | `/api/v1/pengguna/:id` | Detail pengguna | Admin |
+| POST | `/api/v1/pengguna` | Buat pengguna baru | Admin |
+| PUT | `/api/v1/pengguna/:id` | Perbarui pengguna | Admin |
+| DELETE | `/api/v1/pengguna/:id` | Nonaktifkan pengguna | Admin |
+
+### Manajemen Role
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/role` | Daftar role dan permission | Admin |
+| POST | `/api/v1/role` | Buat role baru | Admin |
+| PUT | `/api/v1/role/:id` | Perbarui role | Admin |
+| DELETE | `/api/v1/role/:id` | Hapus role | Admin |
+
+### Profil Pengguna
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/profil` | Dapatkan profil pengguna saat ini | Autentikasi |
+| PUT | `/api/v1/profil` | Perbarui profil pengguna | Autentikasi |
+| PUT | `/api/v1/profil/password` | Ubah password | Autentikasi |
+
+## Route Profil Orang Tua
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/orang-tua/anak` | Dapatkan daftar anak terhubung | Orang Tua |
+| GET | `/api/v1/orang-tua/anak/:id/absensi` | Rekap absensi anak | Orang Tua |
+| GET | `/api/v1/orang-tua/anak/:id/nilai` | Nilai anak | Orang Tua |
+
+## Route Siswa
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/siswa/profil` | Profil siswa | Siswa |
+| GET | `/api/v1/siswa/jadwal` | Jadwal mengajar siswa | Siswa |
+| GET | `/api/v1/siswa/absensi` | Riwayat absensi siswa | Siswa |
+| GET | `/api/v1/siswa/nilai` | Nilai siswa | Siswa |
+
+## Route Statistik (Dashboard)
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/statistik` | Statistik global (ringkasan dashboard) | Admin |
+| GET | `/api/v1/statistik/guru` | Statistik untuk guru yang bersangkutan | Guru |
+| GET | `/api/v1/statistik/rombel/:id` | Statistik untuk rombel yang ditugaskan | Wali Kelas |
+
+## Route Penugasan
+
+### Penugasan Mengajar (teaching_assignments)
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/penugasan/mengajar` | Daftar penugasan mengajar | Admin, Guru |
+| GET | `/api/v1/penugasan/mengajar/:id` | Detail penugasan | Admin, Guru (miliknya) |
+| POST | `/api/v1/penugasan/mengajar` | Buat penugasan baru | Admin |
+| PUT | `/api/v1/penugasan/mengajar/:id` | Perbarui penugasan | Admin |
+| DELETE | `/api/v1/penugasan/mengajar/:id` | Hapus penugasan | Admin |
+
+### Penugasan Wali Kelas
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/penugasan/wali-kelas` | Daftar penugasan wali kelas | Admin |
+| POST | `/api/v1/penugasan/wali-kelas` | Buat penugasan wali kelas | Admin |
+| DELETE | `/api/v1/penugasan/wali-kelas/:id` | Hapus penugwal wali kelas | Admin |
+
+## Route Backend Tambahan
+
+### Audit Log
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/audit-log` | Daftar log audit | Admin |
+| GET | `/api/v1/audit-log/:id` | Detail log audit | Admin |
+
+### Statistik
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/statistik` | Statistik global (ringkasan dashboard) | Admin |
+| GET | `/api/v1/statistik/guru` | Statistik untuk guru yang bersangkutan | Guru |
+| GET | `/api/v1/statistik/rombel/:id` | Statistik untuk rombel yang ditugaskan | Wali Kelas |
+
+## Catatan Penting
+
+- Semua route memerlukan header `Authorization: Bearer <token>`.
+- Role dan permission diverifikasi oleh middleware `authorize`.
+- Response API menggunakan format JSON standar dengan field `success`, `message`, `data`, dan `error`.
+- Pagination menggunakan parameter query `page` dan `per_page`.
+- Filtering menggunakan parameter query sesuai kebutuhan (contoh: `?status=hadir&rombel_id=...`).
+- Ekspor laporan menggunakan format query `?format=pdf` atau `?format=xlsx`.
+- Akses data berdasarkan relasi role (Row Level Security): Guru hanya boleh mengakses data kelas dan rombel yang ditugaskan. Wali Kelas hanya boleh mengakses data rombel yang ditugaskan. Implementasi pembatasan ini pada application layer.

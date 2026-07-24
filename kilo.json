@@ -1,0 +1,66 @@
+{
+  "name": "sagu",
+  "version": "0.1.0",
+  "description": "Sistem Administrasi Guru - Aplikasi SaaS untuk administrasi sekolah",
+  "stage": "documentation",
+  "language": "id",
+  "roles": ["admin", "guru", "wali_kelas", "siswa", "orang_tua"],
+  "modules": [
+    "dashboard",
+    "data_guru",
+    "data_siswa",
+    "rombel",
+    "absensi",
+    "leger",
+    "agenda_mengajar",
+    "laporan",
+    "pengaturan"
+  ],
+  "documentation": {
+    "root": [
+      "AGENTS.md",
+      "README.md",
+      "MEMORY.md",
+      "PROJECT_RULES.md",
+      "TODO.md",
+      "ROADMAP.md",
+      "MILESTONES.md"
+    ],
+    "docs": [
+      "PRD.md",
+      "DESIGN_REFERENCE.md",
+      "TASKS.md",
+      "DATABASE_SCHEMA.md",
+      "ROUTES.md",
+      "AUTH_RBAC.md",
+      "API_SPEC.md",
+      "TEST_PLAN.md",
+      "DEPLOYMENT.md",
+      "CHANGELOG.md",
+      "ARCHITECTURE.md",
+      "USER_FLOW.md",
+      "MODULES.md",
+      "UI_COMPONENTS.md",
+      "SECURITY.md"
+    ]
+  },
+  "mvp_scope": {
+    "include": [
+      "dashboard",
+      "data_guru",
+      "data_siswa",
+      "rombel",
+      "absensi",
+      "leger",
+      "agenda_mengajar",
+      "laporan",
+      "pengaturan"
+    ],
+    "exclude": [
+      "ai_generator",
+      "pembayaran",
+      "lms_lengkap",
+      "ujian_online_kompleks"
+    ]
+  }
+}
