@@ -4,9 +4,25 @@ SAGU adalah aplikasi web SaaS untuk membantu administrasi guru dan sekolah. Proy
 
 ## Status
 
-Fase saat ini: perencanaan MVP dan dokumentasi proyek.
+Fase saat ini: Tahap 3 - Implementasi Auth Foundation.
 
-Belum ada kode aplikasi, instalasi package, atau halaman UI yang dibuat pada fase ini.
+Fondasi autentikasi dan otorisasi sudah diimplementasikan: JWT + RBAC, halaman login, API auth, middleware proteksi route, dan dashboard placeholder untuk Admin dan Guru.
+
+## Menjalankan Aplikasi
+
+1. Salin `.env.example` menjadi `.env` dan isi `DATABASE_URL`.
+2. Jalankan `npm install`.
+3. Jalankan `npx prisma migrate dev` untuk migrasi database.
+4. Jalankan `npx prisma db seed` untuk data awal (default password: `password123`).
+5. Jalankan `npm run dev` untuk development server.
+6. Buka `http://localhost:3000/login`.
+
+Akun seed:
+- Admin: `admin` / `password123`
+- Guru: `guru_informatika` / `password123`
+- Wali Kelas: `wali_kelas_x1` / `password123`
+- Siswa: `siswa_01` / `password123`
+- Orang Tua: `ortu_siswa_01` / `password123`
 
 ## Tujuan MVP
 

@@ -37,11 +37,11 @@ Daftar pekerjaan bertahap untuk membangun SAGU.
 
 ## Tahap 3 - Implementasi Fondasi
 
-- [ ] Setup repository aplikasi.
-- [ ] Setup konfigurasi environment.
-- [ ] Implementasi autentikasi.
-- [ ] Implementasi RBAC.
-- [ ] Implementasi layout dasar dashboard.
+- [x] Setup repository aplikasi.
+- [x] Setup konfigurasi environment.
+- [x] Implementasi autentikasi.
+- [x] Implementasi RBAC.
+- [x] Implementasi layout dasar dashboard.
 - [ ] Implementasi migrasi database awal.
 
 ## Tahap 4 - Implementasi Modul MVP

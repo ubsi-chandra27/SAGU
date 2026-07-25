@@ -65,7 +65,14 @@ MVP tidak mencakup:
 - Direktori `.kilo/command/` dan `.kilo/agent/` dibuat.
 - Audit report final (`audit_report_final.md`) telah dibuat.
 
-## Fase Saat Ini
+## Status Terkini
 
-Tahap 0 fase dokumentasi selesai. Final Architecture Review telah dilakukan (lihat `audit_report_final.md`). Tiga belas (13) Permasalahan Kritis telah diidentifikasi. Enam (6) Permasalahan Kritis telah direvisi dan diselesaikan (lihat `final_revision_report.md`). Proyek berada dalam status SIAP DIIMPLEMENTASIKAN.
+- Tahap 0 dokumentasi telah selesai.
+- Tahap 3 implementasi fondasi telah dimulai.
+- Auth Foundation sudah diimplementasikan: JWT + RBAC, API auth, middleware, login page, dashboard placeholder.
+- `prisma/seed.ts` telah diperbaiki: password placeholder diganti bcrypt hash valid, rombelId kosong diperbaiki.
+- Dokumentasi laporan/audit/review lama dipindah ke `docs/archive/`.
+- `next.config.mjs` diperbaiki: CORS origin menggunakan `APP_URL` bukan wildcard `*`.
+- Section UU PDP ditambahkan ke `docs/SECURITY.md`.
+- Node.js v18.8.0 di environment tidak memenuhi requirement Next.js (minimal v18.17.0), sehingga `next build` belum dapat dijalankan. `tsc --noEmit` lolos.
 

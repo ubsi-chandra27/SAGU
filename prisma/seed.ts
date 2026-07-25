@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -8,22 +9,36 @@ function parseBoolean(value: string | null): boolean {
 }
 
 async function main() {
-  const school = await prisma.school.upsert({
+  let school = await prisma.school.findFirst({
     where: { name: "SMA Negeri 1 SAGU" },
-    update: {},
-    create: {
-      name: "SMA Negeri 1 SAGU",
-      npsn: "20123456",
-      address: "Jl. Pendidikan No. 1, Kota SAGU",
-      phone: "(021) 1234567",
-      email: "sekolah@sagu.sch.id",
-    },
   });
+  if (!school) {
+    school = await prisma.school.create({
+      data: {
+        name: "SMA Negeri 1 SAGU",
+        npsn: "20123456",
+        address: "Jl. Pendidikan No. 1, Kota SAGU",
+        phone: "(021) 1234567",
+        email: "sekolah@sagu.sch.id",
+      },
+    });
+  } else {
+    school = await prisma.school.update({
+      where: { id: school.id },
+      data: {
+        name: "SMA Negeri 1 SAGU",
+        npsn: "20123456",
+        address: "Jl. Pendidikan No. 1, Kota SAGU",
+        phone: "(021) 1234567",
+        email: "sekolah@sagu.sch.id",
+      },
+    });
+  }
 
   console.log(`School created/upserted: ${school.name} (id: ${school.id})`);
 
   const setting = await prisma.setting.upsert({
-    where: { schoolId_key: { schoolId: school.id, key: "school_name" } },
+    where: { schoolId: school.id },
     update: { value: "SMA Negeri 1 SAGU", description: "Nama sekolah" },
     create: {
       schoolId: school.id,
@@ -35,16 +50,29 @@ async function main() {
 
   console.log("Setting created/upserted");
 
-  const academicYear2025 = await prisma.academicYear.upsert({
+  let academicYear2025 = await prisma.academicYear.findFirst({
     where: { name: "2025/2026" },
-    update: {},
-    create: {
-      name: "2025/2026",
-      startDate: new Date("2025-07-01"),
-      endDate: new Date("2026-06-30"),
-      isActive: true,
-    },
   });
+  if (!academicYear2025) {
+    academicYear2025 = await prisma.academicYear.create({
+      data: {
+        name: "2025/2026",
+        startDate: new Date("2025-07-01"),
+        endDate: new Date("2026-06-30"),
+        isActive: true,
+      },
+    });
+  } else {
+    academicYear2025 = await prisma.academicYear.update({
+      where: { id: academicYear2025.id },
+      data: {
+        name: "2025/2026",
+        startDate: new Date("2025-07-01"),
+        endDate: new Date("2026-06-30"),
+        isActive: true,
+      },
+    });
+  }
 
   console.log(`Academic Year created/upserted: ${academicYear2025.name}`);
 
@@ -74,16 +102,29 @@ async function main() {
 
   console.log("Semesters created/upserted");
 
-  const classX = await prisma.class.upsert({
+  let classX = await prisma.class.findFirst({
     where: { name: "X-IPA-1" },
-    update: {},
-    create: {
-      name: "X-IPA-1",
-      level: "X",
-      academicYearId: academicYear2025.id,
-      capacity: 35,
-    },
   });
+  if (!classX) {
+    classX = await prisma.class.create({
+      data: {
+        name: "X-IPA-1",
+        level: "X",
+        academicYearId: academicYear2025.id,
+        capacity: 35,
+      },
+    });
+  } else {
+    classX = await prisma.class.update({
+      where: { id: classX.id },
+      data: {
+        name: "X-IPA-1",
+        level: "X",
+        academicYearId: academicYear2025.id,
+        capacity: 35,
+      },
+    });
+  }
 
   console.log(`Class created/upserted: ${classX.name}`);
 
@@ -106,7 +147,7 @@ async function main() {
     create: {
       username: "admin",
       email: "admin@sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforadminexample",
+      passwordHash: bcrypt.hashSync("password123", 10),
       role: "ADMIN",
       isActive: true,
     },
@@ -118,7 +159,7 @@ async function main() {
     create: {
       username: "guru_informatika",
       email: "guru@inf.sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforguruexample",
+      passwordHash: bcrypt.hashSync("password123", 10),
       role: "GURU",
       isActive: true,
     },
@@ -130,7 +171,7 @@ async function main() {
     create: {
       username: "wali_kelas_x1",
       email: "walikelas@x1.sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforwalikelasexample",
+      passwordHash: bcrypt.hashSync("password123", 10),
       role: "WALI_KELAS",
       isActive: true,
     },
@@ -142,7 +183,7 @@ async function main() {
     create: {
       username: "siswa_01",
       email: "siswa01@sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforsiswaexample",
+      passwordHash: bcrypt.hashSync("password123", 10),
       role: "SISWA",
       isActive: true,
     },
@@ -154,7 +195,7 @@ async function main() {
     create: {
       username: "ortu_siswa_01",
       email: "ortu@sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforortuexample",
+      passwordHash: bcrypt.hashSync("password123", 10),
       role: "ORANG_TUA",
       isActive: true,
     },
@@ -232,7 +273,7 @@ async function main() {
     where: {
       teacherId_rombelId_subjectId_academicYearId_semesterId: {
         teacherId: teacherRecord.id,
-        rombelId: "",
+        rombelId: rombelX1.id,
         subjectId: subjectInformatika.id,
         academicYearId: academicYear2025.id,
         semesterId: semesterGanjil.id,
@@ -537,23 +578,11 @@ async function main() {
 
   console.log("Grading Components created/upserted");
 
-  const studentUser = await prisma.user.upsert({
-    where: { username: "siswa_01" },
-    update: {},
-    create: {
-      username: "siswa_01",
-      email: "siswa01@sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforsiswaexample",
-      role: "SISWA",
-      isActive: true,
-    },
-  });
-
   const student = await prisma.student.upsert({
-    where: { userId: studentUser.id },
+    where: { userId: siswaUser.id },
     update: {},
     create: {
-      userId: studentUser.id,
+      userId: siswaUser.id,
       nis: "100001",
       nisn: "0012345678",
       parentName: "Budi Rahayu",
@@ -562,23 +591,11 @@ async function main() {
     },
   });
 
-  const parentUser = await prisma.user.upsert({
-    where: { username: "ortu_siswa_01" },
-    update: {},
-    create: {
-      username: "ortu_siswa_01",
-      email: "ortu@sagu.sch.id",
-      passwordHash: "$2b$10$placeholderhashedpasswordforortuexample",
-      role: "ORANG_TUA",
-      isActive: true,
-    },
-  });
-
   const parentRecord = await prisma.parent.upsert({
-    where: { userId_studentId: { userId: parentUser.id, studentId: student.id } },
+    where: { userId_studentId: { userId: orangTuaUser.id, studentId: student.id } },
     update: {},
     create: {
-      userId: parentUser.id,
+      userId: orangTuaUser.id,
       studentId: student.id,
       relationship: "ayah",
     },
@@ -658,7 +675,7 @@ async function main() {
       maxScore: 100,
       feedback: "Bagus! Memahami konsep variabel dengan baik. Perlu latihan lebih untuk tipe data array.",
       assessmentDate: new Date("2025-07-15"),
-      assessmentType: "OBSERVASI",
+      assessmentType: "TUGAS_HARIAN",
       recordedById: guruUser.id,
     },
   });

@@ -200,3 +200,54 @@ Dokumen ini mendefinisikan panduan dan standar keamanan yang harus diterapkan da
 5. Perbaiki kerentanan (perbaiki kode, patch, update konfigurasi).
 6. Update audit log dengan insiden dan tindakan yang diambil.
 7. Lakukan post-incident review untuk mencegah kejadian serupa.
+
+## Kepatuhan UU PDP (Undang-Undang Perlindungan Data Pribadi)
+
+### Dasar Hukum
+
+SAGU tunduk pada UU No. 27 Tahun 2022 tentang Perlindungan Data Pribadi (UU PDP) dan peraturan turunannya. Data yang dikelola oleh SAGU dikategorikan sebagai data pribadi yang dilindungi oleh undang-undang.
+
+### Data Pribadi yang Dikelola
+
+| Data | Kategori | Dasar Pengumpulan |
+|---|---|---|
+| NISN, NIS | Data pribadi pendidikan | Wajib sekolah |
+| Nama, tanggal lahir, alamat | Data pribadi umum | Wajib sekolah |
+| Nilai, kehadiran, prestasi | Data akademik sensitif | Wajib sekolah |
+| Foto profil | Data pribadi biometrik | Opsional |
+| Email, nomor telepon | Data kontak | Wajib sekolah |
+| Data orang tua/wali | Data pribadi keluarga | Wajib sekolah |
+
+### Hak Subjek Data
+
+Sesuai UU PDP, sekolah sebagai pengendali data (data controller) wajib menjamin hak-hak berikut:
+
+- **Hak akses**: Siswa/orang tua dapat meminta salinan data pribadi yang disimpan.
+- **Hak koreksi**: Siswa/orang tua dapat meminta perbaikan data yang salah.
+- **Hak penghapusan**: Data dapat dihapus sesuai ketentuan retensi (setelah lulus/keluar).
+- **Hak penolakan**: Subjek data dapat menolak pemrosesan data untuk tujuan tertentu selain administrasi sekolah.
+- **Hak gugatan**: Subjek data dapat mengajukan gugatan jika terjadi pelanggaran.
+
+### Kewajiban Pengendali Data (Sekolah)
+
+1. **Transparansi**: Berikan privacy notice kepada siswa/orang tua saat pendaftaran.
+2. **Tujuan yang jelas**: Data hanya diproses untuk keperluan administrasi dan akademik sekolah.
+3. **Minimalisasi**: Hanya kumpulkan data yang benar-benar diperlukan.
+4. **Pembatasan akses**: Hanya staf yang berwenang yang dapat mengakses data sensitif.
+5. **Keamanan**: Terapkan enkripsi, hashing, dan kontrol akses yang memadai.
+6. **Retensi dan penghapusan**: Data disimpan selama masa berlaku akademik, kemudian dihapus atau di-anonimkan.
+7. **Audit**: Catat setiap akses dan perubahan data pribadi.
+
+### Dampak Pelanggaran
+
+- Pelanggaran data pribadi dapat dikategorikan sebagai pelanggaran ringan, sedang, atau berat.
+- Denda administratif dapat mencapai 2% dari omset penjualan tahunan.
+- Tuntutan gugatan perdata oleh subjek data yang terdampak.
+
+### Implementasi Teknis di SAGU
+
+- Semua password di-hash dengan bcrypt (salt rounds minimum 10).
+- Data sensitif tidak di-log dalam bentuk plaintext.
+- Komunikasi seluruhnya menggunakan HTTPS.
+- Role-based access control (RBAC) diterapkan di semua endpoint.
+- Audit log dicatat untuk setiap akses data pribadi.
