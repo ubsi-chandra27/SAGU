@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import { comparePassword } from "@/lib/auth/password";
 import { generateAccessToken, generateRefreshToken, AccessTokenPayload, RefreshTokenPayload } from "@/lib/auth/jwt";
 import { SessionUser } from "@/lib/auth/session";
-import { badRequest, unauthorized, internalServerError } from "@/lib/errors";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -38,7 +37,14 @@ export async function POST(req: NextRequest) {
     const parsed = loginSchema.safeParse(body);
 
     if (!parsed.success) {
-      return badRequest("Data tidak valid", parsed.error.flatten().fieldErrors);
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Data tidak valid",
+          details: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
     }
 
     const { username, password } = parsed.data;
@@ -49,16 +55,25 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return unauthorized("Username atau password salah");
+      return NextResponse.json(
+        { success: false, message: "Username atau password salah" },
+        { status: 401 }
+      );
     }
 
     if (!user.isActive) {
-      return unauthorized("Akun dinonaktifkan");
+      return NextResponse.json(
+        { success: false, message: "Akun dinonaktifkan" },
+        { status: 401 }
+      );
     }
 
     const isValid = await comparePassword(password, user.passwordHash);
     if (!isValid) {
-      return unauthorized("Username atau password salah");
+      return NextResponse.json(
+        { success: false, message: "Username atau password salah" },
+        { status: 401 }
+      );
     }
 
     const accessPayload: AccessTokenPayload = {
@@ -82,6 +97,7 @@ export async function POST(req: NextRequest) {
         success: true,
         message: "Login berhasil",
         data: {
+          access_token: accessToken,
           user: {
             id: user.id,
             username: user.username,
@@ -99,6 +115,9 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error) {
     console.error("Login error:", error);
-    return internalServerError("Terjadi kesalahan server");
+    return NextResponse.json(
+      { success: false, message: "Terjadi kesalahan server" },
+      { status: 500 }
+    );
   }
 }

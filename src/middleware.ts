@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAccessToken } from "@/lib/auth/jwt";
-import { SessionUser } from "@/lib/auth/session";
-import { PROTECTED_ROUTES, ROLE } from "@/lib/auth/constants";
-import { unauthorized, forbidden } from "@/lib/errors";
+import { ROLE } from "@/lib/auth/constants";
 
 const PUBLIC_PATHS = [
   "/login",
@@ -13,6 +10,15 @@ const PUBLIC_PATHS = [
   "/_next",
   "/favicon.ico",
 ];
+
+type AccessPayload = {
+  email: string;
+  exp?: number;
+  fullName: string;
+  role: string;
+  sub: string;
+  username: string;
+};
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(
@@ -28,62 +34,76 @@ function getRoleFromPath(pathname: string): string | null {
   return null;
 }
 
-export function withAuth(
-  handler: (req: NextRequest, user: SessionUser) => Promise<NextResponse>
-) {
-  return async (req: NextRequest) => {
-    const pathname = req.nextUrl.pathname;
+function decodeJwtPayload(token: string): AccessPayload | null {
+  const payload = token.split(".")[1];
+  if (!payload) return null;
 
-    if (isPublicPath(pathname)) {
-      return handler(req, null as unknown as SessionUser);
+  try {
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+    return JSON.parse(atob(padded)) as AccessPayload;
+  } catch {
+    return null;
+  }
+}
+
+function unauthorized(message: string) {
+  return NextResponse.json({ success: false, message }, { status: 401 });
+}
+
+function forbidden(message: string) {
+  return NextResponse.json({ success: false, message }, { status: 403 });
+}
+
+export function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+
+  if (isPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  const authHeader = req.headers.get("authorization");
+  const accessToken =
+    authHeader?.replace("Bearer ", "") || req.cookies.get("access_token")?.value;
+
+  if (!accessToken) {
+    if (pathname.startsWith("/api/")) {
+      return unauthorized("Missing access token");
     }
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 
-    const authHeader = req.headers.get("authorization");
-    const accessToken = authHeader?.replace("Bearer ", "") || req.cookies.get("access_token")?.value;
-
-    if (!accessToken) {
-      if (pathname.startsWith("/api/")) {
-        return unauthorized("Missing access token");
-      }
-      return NextResponse.redirect(new URL("/login", req.url));
+  const payload = decodeJwtPayload(accessToken);
+  const now = Math.floor(Date.now() / 1000);
+  if (!payload || (payload.exp && payload.exp < now)) {
+    if (pathname.startsWith("/api/")) {
+      return unauthorized("Invalid or expired access token");
     }
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 
-    let payload: { sub: string; username: string; email: string; role: string; fullName: string };
-
-    try {
-      payload = verifyAccessToken(accessToken);
-    } catch {
-      if (pathname.startsWith("/api/")) {
-        return unauthorized("Invalid or expired access token");
-      }
-      return NextResponse.redirect(new URL("/login", req.url));
+  const requiredRole = getRoleFromPath(pathname);
+  if (requiredRole && payload.role !== requiredRole) {
+    if (pathname.startsWith("/api/")) {
+      return forbidden("Akses ditolak");
     }
+    return NextResponse.redirect(
+      new URL("/dashboard/" + payload.role.toLowerCase(), req.url)
+    );
+  }
 
-    const user: SessionUser = {
-      id: payload.sub,
-      username: payload.username,
-      email: payload.email,
-      role: payload.role,
-      fullName: payload.fullName,
-    };
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-user-id", payload.sub);
+  requestHeaders.set("x-user-role", payload.role);
+  requestHeaders.set("x-user-email", payload.email);
 
-    const requiredRole = getRoleFromPath(pathname);
-    if (requiredRole && user.role !== requiredRole) {
-      if (pathname.startsWith("/api/")) {
-        return forbidden("Akses ditolak");
-      }
-      return NextResponse.redirect(new URL("/dashboard/" + user.role.toLowerCase(), req.url));
-    }
-
-    req.headers.set("x-user-id", user.id);
-    req.headers.set("x-user-role", user.role);
-    req.headers.set("x-user-email", user.email);
-
-    return handler(req, user);
-  };
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
-  runtime: "nodejs",
 };
