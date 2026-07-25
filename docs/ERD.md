@@ -10,85 +10,85 @@ Dokumen ini mendefinisikan struktur relasi antar tabel dalam database SAGU berda
 
 ```
 SCHOOL (1) ──┬── SETTING (1:1)
-              │
-              ├── ACADEMIC_YEAR (1:N)
-              │       │
-              │       ├── SEMESTER (1:N)
-              │       │       │
-              │       │       ├── CLASS (1:N)
-              │       │       │       │
-              │       │       │       └── ROMBEL (N:1)
-              │       │       │               │
-              │       │       │               ├── STUDENT (N:1)
-              │       │       │               ├── TEACHING_ASSIGNMENT (N:1)
+               │
+               ├── ACADEMIC_YEAR (1:N)
+               │       │
+               │       ├── SEMESTER (1:N)
+               │       │       │
+               │       │       ├── CLASS (1:N)
+               │       │       │       │
+               │       │       │       └── ROMBEL (N:1)
+               │       │       │               │
+               │       │       │               ├── STUDENT (N:1)
+               │       │       │               ├── TEACHING_ASSIGNMENT (N:1)
                │       │       │               ├── TEACHING_JOURNAL (N:1)
-              │       │       │               ├── ATTENDANCE (N:1)
-              │       │       │               └── RAPORT (N:1)
-              │       │       │
-              │       │       ├── TEACHING_ASSIGNMENT (N:1)
-              │       │       │       │
-              │       │       │       ├── SUBJECT (N:1)
-              │       │       │       ├── ROMBEL (N:1)
-              │       │       │       ├── CLASS (N:1)
-              │       │       │       ├── TEACHER (N:1)
-              │       │       │       ├── ACADEMIC_YEAR (N:1)
-              │       │       │       ├── SEMESTER (N:1)
-              │       │       │       │
-              │       │       │       ├── CURRICULUM_MODULE (LM) (1:N)  ← Lingkup Materi
-              │       │       │       ├── LEARNING_OBJECTIVE (TP) (1:N) ← Tujuan Pembelajaran
-              │       │       │       ├── MEETING (1:N)
-              │       │       │       ├── FORMATIVE_ASSESSMENT (1:N)    ← Penilaian Formatif
-              │       │       │       ├── SUMMATIVE_ASSESSMENT (1:N)    ← Penilaian Sumatif
-              │       │       │       ├── RAPORT (1:N)
-              │       │       │       └── GRADE_DASHBOARD (1:N) ← Nilai Akhir
-              │       │       │
-              │       │       ├── GRADING_COMPONENT (1:N)
-              │       │       │       │
-              │       │       │       └── SUMMATIVE_ASSESSMENT (N:1)  ← FK ke komponen penilaian
-              │       │       │
-              │       │       └── RAPORT (N:1)
-              │       │
-              │       └── TEACHING_ASSIGNMENT (N:1)
-              │               │
-              │               └── CURRICULUM_MODULE (LM) (N:1) → LM (N:1) → LEARNING_OBJECTIVE (TP) (N:1)
-              │
-              ├── SUBJECT (1:N)
-              │       │
-              │       ├── LEARNING_OBJECTIVE_CP (CP) (1:N) ← Capaian Pembelajaran
-              │       ├── TEACHING_ASSIGNMENT (N:1)
+               │       │       │               ├── ATTENDANCE (N:1)
+               │       │       │               └── RAPORT (N:1)
+               │       │       │
+               │       │       ├── TEACHING_ASSIGNMENT (N:1)
+               │       │       │       │
+               │       │       │       ├── SUBJECT (N:1)
+               │       │       │       ├── ROMBEL (N:1)
+               │       │       │       ├── CLASS (N:1)
+               │       │       │       ├── TEACHER (N:1)
+               │       │       │       ├── ACADEMIC_YEAR (N:1)
+               │       │       │       ├── SEMESTER (N:1)
+               │       │       │       │
+               │       │       │       ├── CURRICULUM_MODULE (LM) (1:N)  ← Lingkup Materi
+               │       │       │       ├── LEARNING_OBJECTIVE (TP) (1:N) ← Tujuan Pembelajaran
+               │       │       │       ├── MEETING (1:N)
+               │       │       │       ├── FORMATIVE_ASSESSMENT (1:N)    ← Penilaian Formatif
+               │       │       │       ├── SUMMATIVE_ASSESSMENT (1:N)    ← Penilaian Sumatif
+               │       │       │       ├── RAPORT (1:N)
+               │       │       │       └── GRADE_DASHBOARD (1:N) ← Nilai Akhir
+               │       │       │
+               │       │       ├── GRADING_COMPONENT (1:N)
+               │       │       │       │
+               │       │       │       └── SUMMATIVE_ASSESSMENT (N:1)  ← FK ke komponen penilaian
+               │       │       │
+               │       │       └── RAPORT (N:1)
+               │       │
+               │       └── TEACHING_ASSIGNMENT (N:1)
+               │               │
+               │               └── CURRICULUM_MODULE (LM) (N:1) → LM (N:1) → LEARNING_OBJECTIVE (TP) (N:1)
+               │
+               ├── SUBJECT (1:N)
+               │       │
+               │       ├── LEARNING_OBJECTIVE_CP (CP) (1:N) ← Capaian Pembelajaran
+               │       ├── TEACHING_ASSIGNMENT (N:1)
                │       ├── TEACHING_JOURNAL (N:1)
-              │       ├── SUMMATIVE_ASSESSMENT (N:1)
-              │       ├── RAPORT (N:1)
-              │       └── GRADING_COMPONENT (N:1)
-              │
-              ├── TEACHER (1:N)
-              │       │
-              │       └── TEACHING_ASSIGNMENT (N:1)
-              │               └── (guru mengajar di rombel tertentu untuk mata pelajaran tertentu)
-              │
-              ├── STUDENT (1:N)
-              │       │
-              │       ├── ATTENDANCE (N:1)
-              │       ├── FORMATIVE_ASSESSMENT (N:1)
-              │       ├── SUMMATIVE_ASSESSMENT (N:1)
-              │       ├── GRADE_DASHBOARD (N:1)
-              │       └── RAPORT (N:1)
-              │       └── PARENT (N:1) ← Orang Tua terhubung ke siswa
-              │
-              ├── PARENT (N:1)
-              │       │
-              │       └── USER (N:1) ← akun orang tua
-              │
-              └── USER (1:1) ← master pengguna dengan role
-                      │
-                      ├── TEACHER (1:1) ← guru memiliki profile guru
-                      ├── STUDENT (1:1) ← siswa memiliki profile siswa  
-                      ├── PARENT (N:1) ← orang tua memiliki banyak relasi ke anak
-                      ├── PROFILE (1:1) ← data profil tambahan
-                      ├── ATTENDANCE (N:1) ← absensi yang dicatat
+               │       ├── SUMMATIVE_ASSESSMENT (N:1)
+               │       ├── RAPORT (N:1)
+               │       └── GRADING_COMPONENT (N:1)
+               │
+               ├── TEACHER (1:N)
+               │       │
+               │       └── TEACHING_ASSIGNMENT (N:1)
+               │               └── (guru mengajar di rombel tertentu untuk mata pelajaran tertentu)
+               │
+               ├── STUDENT (1:N)
+               │       │
+               │       ├── ATTENDANCE (N:1)
+               │       ├── FORMATIVE_ASSESSMENT (N:1)
+               │       ├── SUMMATIVE_ASSESSMENT (N:1)
+               │       ├── GRADE_DASHBOARD (N:1)
+               │       └── RAPORT (N:1)
+               │       └── PARENT (N:1) ← Orang Tua terhubung ke siswa
+               │
+               ├── PARENT (N:1)
+               │       │
+               │       └── USER (N:1) ← akun orang tua
+               │
+               └── USER (1:1) ← master pengguna dengan role
+                       │
+                       ├── TEACHER (1:1) ← guru memiliki profile guru
+                       ├── STUDENT (1:1) ← siswa memiliki profile siswa
+                       ├── PARENT (N:1) ← orang tua memiliki banyak relasi ke anak
+                       ├── PROFILE (1:1) ← data profil tambahan
+                       ├── ATTENDANCE (N:1) ← absensi yang dicatat
                        ├── TEACHING_JOURNAL (N:1) ← jurnal mengajar
-                      ├── SUMMATIVE_ASSESSMENT (N:1) ← penilaian yang dipublikasikan
-                      └── HOMEROOM_TEACHER → ROMBEL (relasi wali kelas)
+                       ├── SUMMATIVE_ASSESSMENT (N:1) ← penilaian yang dipublikasikan
+                       └── HOMEROOM_TEACHER → ROMBEL (relasi wali kelas)
 
 ROLE (1:N) ──→ USER (melalui field role di tabel users)
 ```
@@ -170,10 +170,11 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 |---|---|---|
 | users | username | Username harus unik |
 | users | email | Email harus unik |
-| profiles | user_id | Satu profil per pengguna |
+| profiles | userId | Satu profil per pengguna |
 | students | nis | NIS harus unik |
 | students | nisn | NISN harus unik |
-| teachers | user_id | Satu guru per pengguna |
+| students | userId | Satu student per pengguna |
+| teachers | userId | Satu guru per pengguna |
 | rombels | class_id + academic_year_id + semester_id + name | Nama rombel unik per kelas per periode |
 | teaching_assignments | teacher_id + rombel_id + subject_id + academic_year_id + semester_id | Satu penugasan mengajar unik per kombinasi |
 | curriculum_modules | teaching_assignment_id + number | LM unik per penugasan per nomor |
@@ -184,7 +185,7 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 | formative_assessments | learning_objective_id + student_id + assessment_date | Satu nilai formatif per TP per siswa per tanggal |
 | summative_assessments | curriculum_module_id + student_id + grading_component_id | Satu nilai sumatif per siswa per LM per komponen |
 | grades_dashboard | student_id + semester_id + academic_year_id | Satu nilai akhir per siswa per semester |
-| raports | student_id + semester_id + academic_year_id | Satu rapor per siswa per semester |
+| raport | student_id + semester_id + academic_year_id | Satu rapor per siswa per semester |
 | audit_logs | (tidak ada unique, murni append-only) | Log audit bertambah terus |
 
 ### Indeks Komposit yang Disarankan
@@ -205,7 +206,7 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 | summative_assessments | teaching_assignment_id | Semua nilai sumatif per penugasan |
 | grades_dashboard | teaching_assignment_id + student_id | Leger per siswa per penugasan |
 | grades_dashboard | student_id + semester_id | Leger per siswa per semester |
-| raports | student_id + semester_id | Rapor per siswa per semester |
+| raport | student_id + semester_id | Rapor per siswa per semester |
 | audit_logs | userId | Cari audit log pengguna |
 | audit_logs | createdAt | Monitor audit log temporal |
 | audit_logs | action | Cari aksi tertentu dalam log |
@@ -217,9 +218,9 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 | learning_objectives | teaching_assignment_id | Semua TP yang ditugaskan per guru |
 | learning_objectives | academic_year_id + semester_id | TP per periode akademik |
 | teaching_journals | teaching_assignment_id + meeting_date | Jurnal mengajar per penugasan per tanggal |
-| profiles | user_id | Profil per pengguna (unik sudah di-definisi) |
+| profiles | userId | Profil per pengguna (unik sudah di-definisi) |
 | settings | school_id + key | Pengaturan per sekolah per kunci |
-| parents | user_id + student_id | Hubungan unik per orang tua per siswa |
+| parents | userId + studentId | Hubungan unik per orang tua per siswa |
 
 ---
 

@@ -30,12 +30,12 @@ CP adalah dokumen tingkat nasional yang menetapkan capaian pembelajaran untuk se
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik CP |
-| subject_id | UUID / INT (FK -> subjects.id) | Mata pelajaran terkait |
+| id | UUID (PK) | Identifikasi unik CP |
+| subject_id | UUID (FK -> subjects.id) | Mata pelajaran terkait |
 | grade_level | VARCHAR(10) | Jenjang (X, XI, XII) |
 | cp_code | VARCHAR(20) | Kode CP (misalnya CP-INF-01) |
 | description | TEXT | Deskripsi capaian pembelajaran |
-| academic_year_id | UUID / INT (FK -> academic_years.id) | Tahun ajaran referensi |
+| academic_year_id | UUID (FK -> academic_years.id) | Tahun ajaran referensi |
 | created_at | TIMESTAMP | Waktu pembuatan |
 | updated_at | TIMESTAMP | Waktu pembaruan |
 | deleted_at | TIMESTAMP | Soft delete |
@@ -50,12 +50,12 @@ LM adalah kelompok topik materi yang membentuk cakupan pembelajaran dalam satu m
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik LM |
-| teaching_assignment_id | UUID / INT (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
-| cp_id | UUID / INT (FK -> learning_objectives_cp.id) | Relasi ke CP (opsional) |
-| subject_id | UUID / INT (FK -> subjects.id) | Mata pelajaran |
-| academic_year_id | UUID / INT (FK -> academic_years.id) | Tahun ajaran |
-| semester_id | UUID / INT (FK -> semesters.id) | Semester |
+| id | UUID (PK) | Identifikasi unik LM |
+| teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
+| cp_id | UUID (FK -> learning_objectives_cp.id) | Relasi ke CP (opsional) |
+| subject_id | UUID (FK -> subjects.id) | Mata pelajaran |
+| academic_year_id | UUID (FK -> academic_years.id) | Tahun ajaran |
+| semester_id | UUID (FK -> semesters.id) | Semester |
 | number | INT | Nomor urut LM |
 | title | VARCHAR(255) | Judul Lingkup Materi |
 | description | TEXT | Deskripsi LM |
@@ -84,12 +84,12 @@ TP adalah tujuan spesifik yang harus dicapai siswa pada setiap pertemuan atau ra
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik TP |
-| learning_objective_lm_id | UUID / INT (FK -> curriculum_modules.id) | Relasi ke LM induk |
-| teaching_assignment_id | UUID / INT (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
-| subject_id | UUID / INT (FK -> subjects.id) | Mata pelajaran |
-| academic_year_id | UUID / INT (FK -> academic_years.id) | Tahun ajaran |
-| semester_id | UUID / INT (FK -> semesters.id) | Semester |
+| id | UUID (PK) | Identifikasi unik TP |
+| curriculumModuleId | UUID (FK -> curriculum_modules.id) | Relasi ke LM induk |
+| teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
+| subject_id | UUID (FK -> subjects.id) | Mata pelajaran |
+| academic_year_id | UUID (FK -> academic_years.id) | Tahun ajaran |
+| semester_id | UUID (FK -> semesters.id) | Semester |
 | tp_number | INT | Nomor urut TP (contoh: TP1, TP2, TP3) |
 | title | VARCHAR(255) | Judul Tujuan Pembelajaran |
 | description | TEXT | Deskripsi detail TP |
@@ -119,15 +119,15 @@ Pertemuan adalah sesi pembelajaran yang direncanakan oleh guru dan dijalankan pa
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik pertemuan |
-| teaching_assignment_id | UUID / INT (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
-| learning_objective_lm_id | UUID / INT (FK -> curriculum_modules.id, nullable) | LM yang diajarkan |
-| learning_objective_tp_id | UUID / INT (FK -> learning_objectives.id, nullable) | TP yang diajarkan |
-| teaching_journal_id | UUID / INT (FK -> teaching_journals.id) | Relasi ke jurnal mengajar |
+| id | UUID (PK) | Identifikasi unik pertemuan |
+| teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
+| curriculumModuleId | UUID (FK -> curriculum_modules.id, nullable) | LM yang diajarkan |
+| learningObjectiveId | UUID (FK -> learning_objectives.id, nullable) | TP yang diajarkan |
+| teaching_journal_id | UUID (FK -> teaching_journals.id) | Relasi ke jurnal mengajar |
 | meeting_number | INT | Nomor urut pertemuan |
 | meeting_date | DATE | Tanggal pertemuan |
-| start_time | TIME | Waktu mulai |
-| end_time | TIME | Waktu selesai |
+| start_time | DateTime | Waktu mulai |
+| end_time | DateTime | Waktu selesai |
 | topic_summary | TEXT | Ringkasan topik yang dibahas |
 | tp_covered | TEXT | TP yang tercapai pada pertemuan ini |
 | homeroom_teacher_note | TEXT | Catatan wali kelas (nullable) |
@@ -152,17 +152,17 @@ Penilaian formatif dilakukan setiap pertemuan (atau secara berkala) untuk memant
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik penilaian formatif |
-| learning_objective_tp_id | UUID / INT (FK -> learning_objectives.id) | Relasi ke TP |
-| meeting_id | UUID / INT (FK -> meetings.id) | Relasi ke pertemuan |
-| teaching_assignment_id | UUID / INT (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
-| student_id | UUID / INT (FK -> students.id) | Siswa yang dinilai |
+| id | UUID (PK) | Identifikasi unik penilaian formatif |
+| learningObjectiveId | UUID (FK -> learning_objectives.id) | Relasi ke TP |
+| meeting_id | UUID (FK -> meetings.id) | Relasi ke pertemuan |
+| teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Relasi ke penugasan mengajar |
+| student_id | UUID (FK -> students.id) | Siswa yang dinilai |
 | score | DECIMAL(5,2) | Skor penilaian formatif |
 | max_score | DECIMAL(5,2) | Skor maksimal |
 | feedback | TEXT | Umpan balik guru kepada siswa |
 | assessment_date | DATE | Tanggal penilaian (biasanya = tanggal pertemuan) |
 | assessment_type | ENUM | observasi, tugas_harian, kuis_singkat, refleksi, diskusi |
-| recorded_by | UUID / INT (FK -> teachers.id) | Guru yang mencatat |
+| recorded_by | UUID (FK -> teachers.id) | Guru yang mencatat |
 | created_at | TIMESTAMP | Waktu pembuatan |
 | updated_at | TIMESTAMP | Waktu pembaruan |
 | deleted_at | TIMESTAMP | Soft delete |
@@ -185,17 +185,17 @@ Penilaian sumatif dilakukan pada akhir fase atau sub-fase pembelajaran untuk men
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik penilaian sumatif |
-| curriculum_module_id | UUID / INT (FK -> curriculum_modules.id) | Relasi ke LM |
-| meeting_id | UUID / INT (FK -> meetings.id, nullable) | Pertemuan terkait (jika ada) |
-| teaching_assignment_id | UUID / INT (FK -> teaching_assignments.id) | Relasi ke penugasan |
-| student_id | UUID / INT (FK -> students.id) | Siswa yang dinilai |
-| grading_component_id | UUID / INT (FK -> grading_components.id) | Komponen penilaian (Harian, UTS, UAS) |
+| id | UUID (PK) | Identifikasi unik penilaian sumatif |
+| curriculum_module_id | UUID (FK -> curriculum_modules.id) | Relasi ke LM |
+| meeting_id | UUID (FK -> meetings.id, nullable) | Pertemuan terkait (jika ada) |
+| teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Relasi ke penugasan |
+| student_id | UUID (FK -> students.id) | Siswa yang dinilai |
+| grading_component_id | UUID (FK -> grading_components.id) | Komponen penilaian (Harian, UTS, UAS) |
 | score | DECIMAL(5,2) | Skor yang diperoleh |
 | max_score | DECIMAL(5,2) | Skor maksimal |
 | weight_override | DECIMAL(3,2) | Bobot khusus (jika berbeda dari default grading_component) |
 | is_published | BOOLEAN | Status publikasi |
-| published_by | UUID / INT (FK -> teachers.id, nullable) | Guru yang mempublikasikan |
+| published_by | UUID (FK -> teachers.id, nullable) | Guru yang mempublikasikan |
 | published_at | TIMESTAMP (nullable) | Waktu publikasi |
 | notes | TEXT | Catatan tambahan |
 | created_at | TIMESTAMP | Waktu pembuatan |
@@ -220,10 +220,10 @@ Komponen penilaian adalah entitas konfigurasi tingkat sekolah. Setiap komponen m
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik komponen |
-| subject_id | UUID / INT (FK -> subjects.id) | Mata pelajaran (opsional, bisa umum) |
-| academic_year_id | UUID / INT (FK -> academic_years.id) | Tahun ajaran |
-| semester_id | UUID / INT (FK -> semesters.id) | Semester |
+| id | UUID (PK) | Identifikasi unik komponen |
+| subject_id | UUID (FK -> subjects.id) | Mata pelajaran (opsional, bisa umum) |
+| academic_year_id | UUID (FK -> academic_years.id) | Tahun ajaran |
+| semester_id | UUID (FK -> semesters.id) | Semester |
 | name | VARCHAR(50) | Nama komponen (Harian, UTS, UAS) |
 | weight | DECIMAL(3,2) | Bobot komponen (0.30 contohnya) |
 | assessment_category | ENUM | formative, summative |
@@ -297,11 +297,11 @@ Nilai akhir dihitung secara otomatis dari agregasi nilai komponen sumatif yang t
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| student_id | UUID / INT (FK) | Siswa |
-| teaching_assignment_id | UUID / INT (FK) | Penugasan mengajar |
-| subject_id | UUID / INT (FK) | Mata pelajaran |
-| semester_id | UUID / INT (FK) | Semester |
-| academic_year_id | UUID / INT (FK) | Tahun ajaran |
+| student_id | UUID (FK) | Siswa |
+| teaching_assignment_id | UUID (FK) | Penugasan mengajar |
+| subject_id | UUID (FK) | Mata pelajaran |
+| semester_id | UUID (FK) | Semester |
+| academic_year_id | UUID (FK) | Tahun ajaran |
 | numeric_score | DECIMAL(5,2) | Nilai numerik akhir |
 | letter_grade | VARCHAR(2) | Huruf (A/B/C/D/E) |
 | predicate | VARCHAR(20) | Predikat (Sangat Baik, Baik, Cukup, Kurang, Tidak Memenuhi) |
@@ -317,12 +317,12 @@ Rapor adalah dokumen resmi hasil pembelajaran siswa per semester. Rapor berisi n
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| id | UUID / INT (PK) | Identifikasi unik rapor |
-| student_id | UUID / INT (FK -> students.id) | Siswa |
-| teaching_assignment_id | UUID / INT (FK -> teaching_assignments.id) | Penugasan mengajar |
-| subject_id | UUID / INT (FK -> subjects.id) | Mata pelajaran |
-| semester_id | UUID / INT (FK -> semesters.id) | Semester |
-| academic_year_id | UUID / INT (FK -> academic_years.id) | Tahun ajaran |
+| id | UUID (PK) | Identifikasi unik rapor |
+| student_id | UUID (FK -> students.id) | Siswa |
+| teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Penugasan mengajar |
+| subject_id | UUID (FK -> subjects.id) | Mata pelajaran |
+| semester_id | UUID (FK -> semesters.id) | Semester |
+| academic_year_id | UUID (FK -> academic_years.id) | Tahun ajaran |
 | numeric_score | DECIMAL(5,2) | Nilai akhir (sumber dari nilai_akhir) |
 | letter_grade | VARCHAR(2) | Huruf |
 | predicate | VARCHAR(20) | Predikat |

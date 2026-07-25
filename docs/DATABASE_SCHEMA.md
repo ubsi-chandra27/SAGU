@@ -148,6 +148,7 @@ Kelas (tingkat kelas, contoh: X, XI, XII).
 | name | VARCHAR(20) | Nama kelas, contoh: X-1, XI-A, XII-IPA-1 |
 | level | VARCHAR(10) | Tingkat kelas, contoh: X, XI, XII |
 | academic_year_id | UUID (FK -> academic_years.id) | Relasi ke tahun ajaran |
+| semester_id | UUID (FK -> semesters.id, nullable) | Relasi ke semester (nullable) |
 | capacity | INT | Kapasitas maksimal siswa (nullable) |
 | created_at | TIMESTAMP | Waktu pembuatan |
 | updated_at | TIMESTAMP | Waktu pembaruan |
@@ -350,6 +351,10 @@ Jurnal mengajar guru yang mencakup rencana dan record pasca-pertemuan.
 | refleksi_guru | TEXT | Refleksi guru setelah pertemuan (nullable) |
 | tindak_lanjut | TEXT | Rencana pertemuan berikutnya (nullable) |
 | is_plan | BOOLEAN | Status rencana vs jurnal aktual |
+| user_id | UUID (FK -> users.id) | Guru yang membuat jurnal |
+| class_id | UUID (FK -> classes.id) | Relasi ke kelas |
+| rombel_id | UUID (FK -> rombels.id) | Relasi ke rombel |
+| subject_id | UUID (FK -> subjects.id) | Mata pelajaran |
 | created_at | TIMESTAMP | Waktu pembuatan |
 | updated_at | TIMESTAMP | Waktu pembaruan |
 | deleted_at | TIMESTAMP | Soft delete |
@@ -454,7 +459,7 @@ Nilai akhir final per siswa per mata pelajaran per semester.
 | created_at | TIMESTAMP | Waktu pembuatan |
 | updated_at | TIMESTAMP | Waktu pembaruan |
 
-### raports
+### raport
 
 Dokumen rapor akhir per semester.
 
@@ -462,6 +467,8 @@ Dokumen rapor akhir per semester.
 |---|---|---|
 | id | UUID (PK) | Identifikasi unik rapor |
 | student_id | UUID (FK -> students.id) | Siswa |
+| class_id | UUID (FK -> classes.id) | Relasi ke kelas |
+| rombel_id | UUID (FK -> rombels.id, nullable) | Relasi ke rombel |
 | teaching_assignment_id | UUID (FK -> teaching_assignments.id) | Penugasan mengajar |
 | subject_id | UUID (FK -> subjects.id) | Mata pelajaran |
 | semester_id | UUID (FK -> semesters.id) | Semester |
@@ -506,7 +513,7 @@ users (1) ──── (N) students
 users (1) ──── (N) parents
 users (1) ──── (N) attendances (sebagai recorded_by)
 users (1) ──── (N) audit_logs
-users (1) ──── (N) teaching_journals
+users (1) ──── (N) teaching_journals (sebagai user_id)
 users (1) ──── (N) summative_assessments (sebagai published_by)
 users (1) ──── (N) formative_assessments (sebagai recorded_by)
 
@@ -515,12 +522,12 @@ academic_years (1) ──── (N) classes
 academic_years (1) ──── (N) rombels
 academic_years (1) ──── (N) teaching_assignments
 academic_years (1) ──── (N) grading_components
-academic_years (1) ──── (N) rapors
+academic_years (1) ──── (N) raport
 
 semesters (1) ──── (N) teaching_assignments
 semesters (1) ──── (N) grading_components
 semesters (1) ──── (N) rombels
-semesters (1) ──── (N) rapors
+semesters (1) ──── (N) raport
 semesters (1) ──── (N) grades_dashboard
 
 classes (1) ──── (N) rombels
@@ -531,12 +538,12 @@ rombels (1) ──── (N) teaching_assignments
 rombels (1) ──── (N) attendances
 rombels (1) ──── (N) teaching_journals
 rombels (N) ──── (1) users (homeroom_teacher_id)
-rombels (1) ──── (N) rapors
+rombels (1) ──── (N) raport
 
 subjects (1) ──── (N) teaching_assignments
 subjects (1) ──── (N) teaching_journals
 subjects (1) ──── (N) summative_assessments
-subjects (1) ──── (N) rapors
+subjects (1) ──── (N) raport
 subjects (1) ──── (N) grades_dashboard
 subjects (1) ──── (N) learning_objectives_cp
 
@@ -546,7 +553,7 @@ students (1) ──── (N) attendances
 students (1) ──── (N) formative_assessments
 students (1) ──── (N) summative_assessments
 students (1) ──── (N) grades_dashboard
-students (1) ──── (N) rapors
+students (1) ──── (N) raport
 students (1) ──── (N) parents
 
 teaching_assignments (1) ──── (N) curriculum_modules
@@ -555,7 +562,7 @@ teaching_assignments (1) ──── (N) meetings
 teaching_assignments (1) ──── (N) formative_assessments
 teaching_assignments (1) ──── (N) summative_assessments
 teaching_assignments (1) ──── (N) teaching_journals
-teaching_assignments (1) ──── (N) rapors
+teaching_assignments (1) ──── (N) raport
 teaching_assignments (1) ──── (N) grades_dashboard
 
 learning_objectives_cp (1) ──── (N) curriculum_modules
@@ -600,7 +607,7 @@ grading_components (1) ──── (N) summative_assessments
 - `summative_assessments.meeting_id` — INDEX
 - `grades_dashboard.teaching_assignment_id + student_id` — COMPOSITE INDEX
 - `grades_dashboard.student_id + semester_id` — COMPOSITE INDEX
-- `raports.student_id + semester_id` — COMPOSITE INDEX
+- `raport.student_id + semester_id` — COMPOSITE INDEX
 - `audit_logs.user_id` — INDEX
 - `audit_logs.created_at` — INDEX
 - `audit_logs.action` — INDEX

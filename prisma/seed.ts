@@ -87,6 +87,19 @@ async function main() {
 
   console.log(`Class created/upserted: ${classX.name}`);
 
+  const rombelX1 = await prisma.rombel.upsert({
+    where: { classId_academicYearId_semesterId_name: { classId: classX.id, academicYearId: academicYear2025.id, semesterId: semesterGanjil.id, name: "X-IPA-1" } },
+    update: {},
+    create: {
+      classId: classX.id,
+      academicYearId: academicYear2025.id,
+      semesterId: semesterGanjil.id,
+      name: "X-IPA-1",
+    },
+  });
+
+  console.log(`Rombel created/upserted: ${rombelX1.name}`);
+
   const adminUser = await prisma.user.upsert({
     where: { username: "admin" },
     update: {},
@@ -228,7 +241,7 @@ async function main() {
     update: {},
     create: {
       teacherId: teacherRecord.id,
-      rombelId: "",
+      rombelId: rombelX1.id,
       classId: classX.id,
       subjectId: subjectInformatika.id,
       academicYearId: academicYear2025.id,
@@ -543,7 +556,6 @@ async function main() {
       userId: studentUser.id,
       nis: "100001",
       nisn: "0012345678",
-      rombelId: "",
       parentName: "Budi Rahayu",
       parentPhone: "(021) 8881234",
       parentEmail: "ortu.siswa01@sagu.sch.id",
@@ -613,7 +625,7 @@ async function main() {
     update: {},
     create: {
       studentId: student.id,
-      rombelId: "",
+      rombelId: rombelX1.id,
       attendanceDate: new Date("2025-07-15"),
       status: "HADIR",
       recordedById: guruUser.id,
@@ -625,7 +637,7 @@ async function main() {
     update: {},
     create: {
       studentId: student.id,
-      rombelId: "",
+      rombelId: rombelX1.id,
       attendanceDate: new Date("2025-07-17"),
       status: "HADIR",
       recordedById: guruUser.id,
@@ -676,6 +688,7 @@ async function main() {
     create: {
       curriculumModuleId: lm1.id,
       gradingComponentId: gcHarian.id,
+      subjectId: subjectInformatika.id,
       teachingAssignmentId: teachingAssignment.id,
       studentId: student.id,
       score: 82,
@@ -691,6 +704,7 @@ async function main() {
     create: {
       curriculumModuleId: lm2.id,
       gradingComponentId: gcUTS.id,
+      subjectId: subjectInformatika.id,
       teachingAssignmentId: teachingAssignment.id,
       studentId: student.id,
       score: 78,
@@ -706,6 +720,7 @@ async function main() {
     create: {
       curriculumModuleId: lm4.id,
       gradingComponentId: gcUAS.id,
+      subjectId: subjectInformatika.id,
       teachingAssignmentId: teachingAssignment.id,
       studentId: student.id,
       score: 80,
