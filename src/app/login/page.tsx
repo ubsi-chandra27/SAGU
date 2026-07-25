@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Badge, Button, Card, Input } from "@/components/ui";
+import { tokens, withAlpha } from "@/styles/tokens";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -39,102 +41,119 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "#f0f4f8",
-      padding: "1rem",
-    }}>
-      <div style={{
-        background: "#fff",
-        padding: "2rem",
-        borderRadius: "8px",
-        boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-        width: "100%",
-        maxWidth: "400px",
-      }}>
-        <h1 style={{ textAlign: "center", marginBottom: "1.5rem", color: "#1a365d" }}>
-          SAGU - Masuk
-        </h1>
-
-        {error && (
-          <div style={{
-            backgroundColor: "#fed7d7",
-            color: "#c53030",
-            padding: "0.75rem",
-            borderRadius: "4px",
-            marginBottom: "1rem",
-            fontSize: "0.875rem",
-          }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #e2e8f0",
-                borderRadius: "4px",
-                fontSize: "1rem",
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "1.5rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #e2e8f0",
-                borderRadius: "4px",
-                fontSize: "1rem",
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
+    <main
+      style={{
+        alignItems: "center",
+        background: `linear-gradient(135deg, ${tokens.color.background} 0%, ${tokens.color.primarySoft} 100%)`,
+        display: "flex",
+        justifyContent: "center",
+        minHeight: "100vh",
+        padding: tokens.spacing["2xl"],
+      }}
+    >
+      <Card
+        style={{
+          boxShadow: tokens.shadow.soft,
+          maxWidth: "440px",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            gap: tokens.spacing.md,
+            marginBottom: tokens.spacing["2xl"],
+            textAlign: "center",
+          }}
+        >
+          <div
+            aria-hidden="true"
             style={{
-              width: "100%",
-              padding: "0.75rem",
-              backgroundColor: "#2b6cb0",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              fontSize: "1rem",
-              fontWeight: "500",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.6 : 1,
+              alignItems: "center",
+              background: tokens.color.primary,
+              borderRadius: tokens.radius.sm,
+              boxShadow: `0 10px 22px ${withAlpha(tokens.color.primary, 0.24)}`,
+              color: tokens.color.surface,
+              display: "flex",
+              fontSize: tokens.typography.body.fontSize,
+              fontWeight: tokens.typography.weight.bold,
+              height: "44px",
+              justifyContent: "center",
+              width: "44px",
             }}
           >
-            {loading ? "Memproses..." : "Masuk"}
-          </button>
+            S
+          </div>
+          <div>
+            <h1
+              style={{
+                color: tokens.color.textPrimary,
+                fontSize: tokens.typography.heading1.fontSize,
+                lineHeight: tokens.typography.heading1.lineHeight,
+                margin: 0,
+              }}
+            >
+              Masuk ke SAGU
+            </h1>
+            <p
+              style={{
+                color: tokens.color.textSecondary,
+                fontSize: tokens.typography.body.fontSize,
+                lineHeight: tokens.typography.body.lineHeight,
+                margin: `${tokens.spacing.xs} 0 0`,
+              }}
+            >
+              Sistem Administrasi Guru untuk operasional sekolah.
+            </p>
+          </div>
+        </div>
+
+        {error ? (
+          <div style={{ marginBottom: tokens.spacing.lg }}>
+            <Badge tone="danger">{error}</Badge>
+          </div>
+        ) : null}
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ display: "grid", gap: tokens.spacing.lg }}>
+            <Input
+              autoComplete="username"
+              label="Username"
+              name="username"
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              type="text"
+              value={username}
+            />
+            <Input
+              autoComplete="current-password"
+              label="Password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              type="password"
+              value={password}
+            />
+            <Button disabled={loading} fullWidth type="submit" variant="primary">
+              {loading ? "Memproses..." : "Masuk"}
+            </Button>
+          </div>
         </form>
 
-        <p style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.875rem", color: "#718096" }}>
+        <p
+          style={{
+            color: tokens.color.textMuted,
+            fontSize: tokens.typography.small.fontSize,
+            lineHeight: tokens.typography.small.lineHeight,
+            margin: `${tokens.spacing.lg} 0 0`,
+            textAlign: "center",
+          }}
+        >
           Password default: <strong>password123</strong>
         </p>
-      </div>
-    </div>
+      </Card>
+    </main>
   );
 }

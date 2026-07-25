@@ -28,7 +28,7 @@ Setiap entri mencakup:
 - ROADMAP.md untuk arah pengembangan.
 - MILESTONES.md untuk target rilis.
 - docs/PRD.md untuk kebutuhan produk.
-- docs/DESIGN_REFERENCE.md untuk pedoman desain.
+- docs/DESIGN_SYSTEM.md untuk pedoman desain.
 - docs/TASKS.md untuk daftar tugas terperinci.
 - docs/DATABASE_SCHEMA.md untuk struktur database.
 - docs/ROUTES.md untuk daftar route.

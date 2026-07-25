@@ -67,7 +67,7 @@ Akun seed:
 - `MILESTONES.md`: target rilis bertahap.
 - `kilo.json`: konfigurasi proyek.
 - `docs/PRD.md`: spesifikasi kebutuhan produk.
-- `docs/DESIGN_REFERENCE.md`: pedoman desain visual dan UX.
+- `docs/DESIGN_SYSTEM.md`: pedoman desain visual, UX, dan token UI Kit.
 - `docs/TASKS.md`: daftar tugas terperinci per fase.
 - `docs/DATABASE_SCHEMA.md`: struktur database dan ERD konseptual.
 - `docs/ROUTES.md`: daftar route API dan frontend.
@@ -101,4 +101,3 @@ SAGU dibuat untuk lingkungan sekolah, sehingga prioritasnya adalah:
 - API: `docs/API_SPEC.md`
 - RBAC: `docs/AUTH_RBAC.md`
 - Pengujian: `docs/TEST_PLAN.md`
-

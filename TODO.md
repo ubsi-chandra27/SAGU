@@ -42,6 +42,7 @@ Daftar pekerjaan bertahap untuk membangun SAGU.
 - [x] Implementasi autentikasi.
 - [x] Implementasi RBAC.
 - [x] Implementasi layout dasar dashboard.
+- [x] Pertahankan `auth_implementation_plan.md` di root sebagai referensi aktif karena rencana auth foundation sudah dieksekusi, belum menjadi arsip.
 - [ ] Implementasi migrasi database awal.
 
 ## Tahap 4 - Implementasi Modul MVP
@@ -67,4 +68,3 @@ Daftar pekerjaan bertahap untuk membangun SAGU.
 - [ ] Uji laporan.
 - [ ] Uji backup dan restore.
 - [ ] Rilis beta internal.
-

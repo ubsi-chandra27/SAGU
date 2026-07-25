@@ -1,3 +1,5 @@
+> Status: rencana ini sudah dieksekusi (lihat commit auth foundation). Dipertahankan di root sebagai referensi aktif, bukan arsip.
+
 # Auth Foundation Implementation Plan
 
 **Tanggal:** 2026-07-25  
