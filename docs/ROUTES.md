@@ -11,6 +11,18 @@ Dokumen ini mendefinisikan route API dan route frontend untuk aplikasi SAGU. Sem
 - Route RESTful mengikuti pola CRUD standar.
 - Route dilindungi oleh middleware autentikasi kecuali route publik (login, register).
 
+## Route UI Aktual
+
+Route berikut sudah tersedia pada implementasi saat ini.
+
+| Route | Deskripsi | Akses |
+|---|---|---|
+| `/login` | Halaman login dengan branding sekolah | Publik |
+| `/dashboard/admin` | Dashboard Admin | Admin |
+| `/dashboard/guru` | Dashboard Guru | Guru |
+| `/dashboard/admin/pengaturan/branding-login` | Pengaturan branding halaman login | Admin |
+| `/dashboard/admin/data-master/tahun-ajaran` | Manajemen Tahun Ajaran dan Semester | Admin |
+
 ## Route Publik
 
 ### Autentikasi
@@ -72,21 +84,24 @@ Dokumen ini mendefinisikan route API dan route frontend untuk aplikasi SAGU. Sem
 
 | Method | Route | Deskripsi | Akses |
 |---|---|---|---|
-| GET | `/api/v1/tahun-ajaran` | Daftar tahun ajaran | Semua Role |
-| GET | `/api/v1/tahun-ajaran/:id` | Detail tahun ajaran | Semua Role |
+| GET | `/api/v1/tahun-ajaran` | Daftar tahun ajaran, mendukung `includeArchived=true` | Admin |
+| GET | `/api/v1/tahun-ajaran/active` | Tahun ajaran dan semester aktif untuk topbar dashboard | Autentikasi |
+| GET | `/api/v1/tahun-ajaran/:id` | Detail tahun ajaran | Admin |
 | POST | `/api/v1/tahun-ajaran` | Buat tahun ajaran baru | Admin |
 | PUT | `/api/v1/tahun-ajaran/:id` | Perbarui tahun ajaran | Admin |
 | DELETE | `/api/v1/tahun-ajaran/:id` | Hapus lunak tahun ajaran | Admin |
+| POST | `/api/v1/tahun-ajaran/:id/activate` | Aktifkan tahun ajaran dan nonaktifkan tahun ajaran lain | Admin |
 
 ### Semester
 
 | Method | Route | Deskripsi | Akses |
 |---|---|---|---|
-| GET | `/api/v1/semester` | Daftar semester | Semua Role |
-| GET | `/api/v1/semester/:id` | Detail semester | Semua Role |
+| GET | `/api/v1/semester` | Daftar semester berdasarkan tahun ajaran, mendukung `academicYearId` dan `includeArchived=true` | Admin |
+| GET | `/api/v1/semester/:id` | Detail semester | Admin |
 | POST | `/api/v1/semester` | Buat semester baru | Admin |
 | PUT | `/api/v1/semester/:id` | Perbarui semester | Admin |
 | DELETE | `/api/v1/semester/:id` | Hapus lunak semester | Admin |
+| POST | `/api/v1/semester/:id/activate` | Aktifkan semester dan tahun ajaran terkait | Admin |
 
 ### Kelas
 

@@ -65,7 +65,7 @@ MVP tidak mencakup:
 - Direktori `.kilo/command/` dan `.kilo/agent/` dibuat.
 - Audit report final (`audit_report_final.md`) telah dibuat.
 
-## Status Terkini
+## Status Terkini Lama
 
 - Tahap 0 dokumentasi telah selesai.
 - Tahap 3 implementasi fondasi telah dimulai.
@@ -76,3 +76,14 @@ MVP tidak mencakup:
 - Section UU PDP ditambahkan ke `docs/SECURITY.md`.
 - Node.js v18.8.0 di environment tidak memenuhi requirement Next.js (minimal v18.17.0), sehingga `next build` belum dapat dijalankan. `tsc --noEmit` lolos.
 
+## Status Terkini - 2026-07-26
+
+- Fondasi aplikasi yang sudah selesai: login ADMIN dan GURU, logout, refresh token, middleware dan RBAC, branding login, dashboard shell, Data Master Tahun Ajaran, Data Master Semester, dan integrasi periode aktif pada topbar.
+- Route UI Tahun Ajaran dan Semester tersedia di `/dashboard/admin/data-master/tahun-ajaran`.
+- Route API Tahun Ajaran tersedia di `/api/v1/tahun-ajaran`, `/api/v1/tahun-ajaran/:id`, `/api/v1/tahun-ajaran/:id/activate`, dan `/api/v1/tahun-ajaran/active`.
+- Route API Semester tersedia di `/api/v1/semester`, `/api/v1/semester/:id`, dan `/api/v1/semester/:id/activate`.
+- Aktivasi periode menggunakan aturan satu tahun ajaran aktif dan satu semester aktif. Mengaktifkan semester juga memastikan tahun ajaran terkait menjadi periode aktif.
+- Soft delete tersedia untuk Tahun Ajaran dan Semester melalui pengisian `deletedAt`; data arsip tidak tampil di daftar default.
+- Quality gate terakhir untuk modul periode akademik: Prisma validate PASS, Prisma generate PASS, TypeScript PASS, lint PASS, dan build PASS.
+- Tahap berikutnya adalah Absensi Operasional MVP.
+- Periode aktif di database harus dikonfirmasi dengan periode sekolah sebenarnya sebelum dipakai untuk operasional nyata.

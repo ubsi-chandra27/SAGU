@@ -1,0 +1,484 @@
+.shell {
+  background: var(--dashboard-background);
+  color: var(--dashboard-text-primary);
+  display: flex;
+  min-height: 100vh;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.sidebar {
+  background: var(--dashboard-surface);
+  border-right: 1px solid var(--dashboard-border);
+  display: flex;
+  flex: 0 0 280px;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
+  position: sticky;
+  top: 0;
+  transition: flex-basis 160ms ease, width 160ms ease;
+  width: 280px;
+  z-index: 20;
+}
+
+.sidebarCollapsed {
+  flex-basis: 84px;
+  padding-left: 14px;
+  padding-right: 14px;
+  width: 84px;
+}
+
+.sidebarHeader,
+.drawerHeader {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.brand {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brandMark {
+  align-items: center;
+  background: var(--dashboard-primary);
+  border-radius: 8px;
+  color: var(--dashboard-surface);
+  display: inline-flex;
+  flex: 0 0 40px;
+  font-size: 18px;
+  font-weight: 700;
+  height: 40px;
+  justify-content: center;
+  line-height: 24px;
+  width: 40px;
+}
+
+.brandText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.brandText strong {
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.brandText span {
+  color: var(--dashboard-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collapseButton,
+.drawerClose,
+.mobileMenuButton {
+  align-items: center;
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 8px;
+  color: var(--dashboard-text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.collapseButton:hover,
+.drawerClose:hover,
+.mobileMenuButton:hover {
+  background: var(--dashboard-surface-muted);
+  color: var(--dashboard-text-primary);
+}
+
+.nav {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.navGroup {
+  display: grid;
+  gap: 6px;
+}
+
+.navGroupLabel {
+  color: var(--dashboard-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  margin: 0;
+  padding: 0 10px;
+  text-transform: uppercase;
+}
+
+.navLink {
+  align-items: center;
+  border-radius: 8px;
+  color: var(--dashboard-text-secondary);
+  display: flex;
+  gap: 10px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0 12px;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  background: var(--dashboard-surface-muted);
+  color: var(--dashboard-text-primary);
+}
+
+.navLinkActive {
+  background: var(--dashboard-primary-soft);
+  color: var(--dashboard-primary);
+  font-weight: 700;
+}
+
+.navIcon {
+  flex: 0 0 auto;
+}
+
+.navText {
+  font-size: 14px;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebarCollapsed .navLink {
+  justify-content: center;
+  padding: 0;
+}
+
+.sidebarFooter {
+  border-top: 1px solid var(--dashboard-divider);
+  display: grid;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.sidebarUser,
+.userButton {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sidebarUser {
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.sidebarCollapsed .sidebarUser {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sidebarAvatar,
+.userAvatar {
+  align-items: center;
+  background: var(--dashboard-primary-soft);
+  border-radius: 9999px;
+  color: var(--dashboard-primary);
+  display: inline-flex;
+  flex: 0 0 36px;
+  font-size: 14px;
+  font-weight: 700;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.sidebarUserText,
+.userText,
+.userDropdownIdentity {
+  display: grid;
+  min-width: 0;
+}
+
+.sidebarUserText strong,
+.userText strong,
+.userDropdownIdentity strong {
+  color: var(--dashboard-text-primary);
+  font-size: 13px;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebarUserText span,
+.userText span,
+.userDropdownIdentity span {
+  color: var(--dashboard-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.logoutButton {
+  gap: 8px;
+}
+
+.sidebarCollapsed .logoutButton {
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+}
+
+.mainArea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--dashboard-border);
+  display: flex;
+  gap: 16px;
+  min-height: 72px;
+  min-width: 0;
+  padding: 12px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.topbarContext {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.topbarTitle {
+  color: var(--dashboard-text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb {
+  min-width: 0;
+}
+
+.breadcrumbList {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumbItem {
+  align-items: center;
+  color: var(--dashboard-text-muted);
+  display: inline-flex;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.breadcrumbItem:not(:last-child)::after {
+  content: "/";
+  margin-left: 6px;
+}
+
+.breadcrumbLink {
+  color: var(--dashboard-text-secondary);
+  text-decoration: none;
+}
+
+.breadcrumbLink:hover {
+  color: var(--dashboard-primary);
+}
+
+.breadcrumbCurrent {
+  color: var(--dashboard-text-muted);
+}
+
+.topbarActions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.academicStatus {
+  background: var(--dashboard-surface-muted);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 9999px;
+  color: var(--dashboard-text-secondary);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.userMenu {
+  position: relative;
+}
+
+.userButton {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 9999px;
+  cursor: pointer;
+  padding: 4px 10px 4px 4px;
+}
+
+.userDropdown {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 8px;
+  box-shadow: var(--dashboard-shadow);
+  display: grid;
+  gap: 8px;
+  min-width: 220px;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 30;
+}
+
+.userDropdownIdentity {
+  border-bottom: 1px solid var(--dashboard-divider);
+  padding: 4px 4px 10px;
+}
+
+.userDropdownItem {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--dashboard-danger);
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 8px;
+  line-height: 22px;
+  padding: 10px;
+  text-align: left;
+}
+
+.userDropdownItem:hover {
+  background: var(--dashboard-danger-soft);
+}
+
+.mobileMenuButton {
+  display: none;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}
+
+.mobileBackdrop {
+  background: rgba(15, 23, 42, 0.38);
+  border: 0;
+  cursor: pointer;
+  inset: 0;
+  padding: 0;
+  position: fixed;
+  z-index: 40;
+}
+
+.mobileDrawer {
+  background: var(--dashboard-surface);
+  bottom: 0;
+  box-shadow: 20px 0 40px rgba(15, 23, 42, 0.16);
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  max-width: calc(100vw - 40px);
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  width: 320px;
+  z-index: 45;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: inline-flex;
+  }
+
+  .topbar {
+    padding: 12px 20px;
+  }
+
+  .topbarActions {
+    gap: 8px;
+  }
+
+  .academicStatus {
+    display: none;
+  }
+
+  .content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar {
+    gap: 10px;
+    min-height: 64px;
+    padding: 10px 14px;
+  }
+
+  .topbarTitle {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .userButton {
+    padding: 3px;
+  }
+
+  .userText {
+    display: none;
+  }
+
+  .content {
+    padding: 20px 14px;
+  }
+
+  .mobileDrawer {
+    max-width: calc(100vw - 28px);
+    width: 304px;
+  }
+}
