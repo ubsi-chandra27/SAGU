@@ -4,6 +4,20 @@
 
 Dokumen ini mencatat setiap perubahan signifikan pada proyek SAGU berdasarkan versi dan tanggal.
 
+## 2026-07-26 - Koreksi Dashboard Admin Terverifikasi
+
+### Fixed
+
+- Dashboard Admin diselaraskan dengan scope SAGU yang sudah terverifikasi: periode aktif, data master tersedia, kesiapan data, dan tindakan ke route nyata.
+- Breadcrumb Dashboard Admin root tidak lagi berulang; halaman Tahun Ajaran dan Semester memakai pola `Dashboard > Data Master > Tahun Ajaran & Semester`.
+- Drawer mobile dashboard menjaga branding SAGU tetap terbaca.
+- Card `Aktivitas Terbaru` dan `Pengumuman` tidak ditampilkan pada Dashboard Admin karena belum menjadi requirement MVP yang disetujui.
+
+### Validation
+
+- Screenshot verifikasi Dashboard Admin dan Tahun Ajaran/Semester dibuat di `docs/screenshots/verification/`.
+- Quality gate teknis PASS setelah koreksi: `prisma validate`, `prisma generate`, `tsc --noEmit`, `npm run lint`, dan `npm run build`.
+
 ## 2026-07-26 - Absensi Operasional MVP
 
 ### Added

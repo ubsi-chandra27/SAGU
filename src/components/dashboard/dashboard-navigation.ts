@@ -64,7 +64,7 @@ export const dashboardNavigation: Record<DashboardRole, DashboardNavGroup[]> = {
           icon: "school",
         },
         {
-          label: "Tahun Ajaran",
+          label: "Tahun Ajaran & Semester",
           href: "/dashboard/admin/data-master/tahun-ajaran",
           icon: "calendar",
         },
@@ -117,12 +117,12 @@ export const dashboardNavigation: Record<DashboardRole, DashboardNavGroup[]> = {
 const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin": {
     title: "Dashboard Admin",
-    breadcrumbs: [{ label: "Dashboard Admin" }],
+    breadcrumbs: [{ label: "Dashboard" }],
   },
   "/dashboard/admin/pengaturan/branding-login": {
     title: "Branding Login",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Pengaturan" },
       { label: "Branding Login" },
     ],
@@ -130,15 +130,15 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/data-master/tahun-ajaran": {
     title: "Tahun Ajaran dan Semester",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
-      { label: "Tahun Ajaran" },
+      { label: "Tahun Ajaran & Semester" },
     ],
   },
   "/dashboard/admin/data-master/mata-pelajaran": {
     title: "Mata Pelajaran",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
       { label: "Mata Pelajaran" },
     ],
@@ -146,7 +146,7 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/data-master/guru": {
     title: "Data Guru",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
       { label: "Guru" },
     ],
@@ -154,7 +154,7 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/data-master/siswa": {
     title: "Data Siswa",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
       { label: "Siswa" },
     ],
@@ -162,7 +162,7 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/data-master/kelas": {
     title: "Kelas",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
       { label: "Kelas" },
     ],
@@ -170,7 +170,7 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/data-master/rombel": {
     title: "Rombel",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
       { label: "Rombel" },
     ],
@@ -178,7 +178,7 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/data-master/penugasan-mengajar": {
     title: "Penugasan Mengajar",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Data Master" },
       { label: "Penugasan Mengajar" },
     ],
@@ -186,7 +186,7 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
   "/dashboard/admin/rekap-absensi": {
     title: "Rekap Absensi",
     breadcrumbs: [
-      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Dashboard", href: "/dashboard/admin" },
       { label: "Absensi" },
       { label: "Rekap Absensi" },
     ],
@@ -220,7 +220,7 @@ export function getDashboardPageMeta(pathname: string, role: DashboardRole): Das
     return {
       title: pathname.includes("/cetak") ? "Cetak Rekap Absensi" : "Detail Rekap Absensi",
       breadcrumbs: [
-        { label: "Dashboard Admin", href: "/dashboard/admin" },
+        { label: "Dashboard", href: "/dashboard/admin" },
         { label: "Rekap Absensi", href: "/dashboard/admin/rekap-absensi" },
         { label: pathname.includes("/cetak") ? "Cetak" : "Detail" },
       ],
@@ -230,7 +230,7 @@ export function getDashboardPageMeta(pathname: string, role: DashboardRole): Das
   return (
     dashboardPageMeta[pathname] || {
       title: role === "admin" ? "Dashboard Admin" : "Dashboard Guru",
-      breadcrumbs: [{ label: role === "admin" ? "Dashboard Admin" : "Dashboard Guru" }],
+      breadcrumbs: [{ label: role === "admin" ? "Dashboard" : "Dashboard Guru" }],
     }
   );
 }

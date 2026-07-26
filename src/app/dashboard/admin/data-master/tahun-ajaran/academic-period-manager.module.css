@@ -195,6 +195,21 @@
   }
 }
 
+@media (min-width: 1081px) {
+  .table {
+    min-width: 0;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px;
+  }
+
+  .rowActions {
+    gap: 6px;
+  }
+}
+
 @media (max-width: 640px) {
   .semesterHeader {
     display: grid;

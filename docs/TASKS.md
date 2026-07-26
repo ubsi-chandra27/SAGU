@@ -12,6 +12,7 @@ Daftar status implementasi SAGU berdasarkan kondisi kode aktual.
 | Middleware dan RBAC | SELESAI | Route dashboard ADMIN/GURU diproteksi middleware dan role. |
 | Branding Login | SELESAI | Branding halaman login dan pengaturan admin tersedia. |
 | Dashboard Shell | SELESAI | Sidebar, topbar, breadcrumb, collapse sidebar, dan mobile drawer tersedia. |
+| Dashboard Admin | SELESAI | Dashboard Admin memakai data database dasar, periode aktif, tindakan ke route nyata, breadcrumb tunggal, dan tanpa card di luar scope MVP. |
 | Tahun Ajaran | SELESAI | CRUD, aktivasi, validasi tanggal, dan soft delete tersedia untuk ADMIN. |
 | Semester | SELESAI | CRUD, aktivasi, validasi tanggal, relasi tahun ajaran, dan soft delete tersedia untuk ADMIN. |
 | Integrasi periode aktif pada topbar | SELESAI | Topbar dashboard membaca tahun ajaran dan semester aktif dari API. |

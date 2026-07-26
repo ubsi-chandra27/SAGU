@@ -1,19 +1,21 @@
 # Audit Dashboard SAGU
 
+> Catatan 2026-07-26: dokumen ini adalah snapshot historis sebelum koreksi Dashboard Admin, Data Master, dan Absensi Operasional MVP. Status aktual dicatat di `docs/TASKS.md`, `docs/ROUTES.md`, `MEMORY.md`, dan `docs/CHANGELOG.md`.
+
 Audit ini memeriksa implementasi aktual Dashboard Admin dan Dashboard Guru sebelum pembangunan Data Master Akademik. Audit dilakukan terhadap kode, route runtime, query database pembanding, screenshot, RBAC, responsivitas, dan quality gate teknis.
 
 ## 1. Ringkasan Eksekutif
 
 Status: NOT READY
 
-Dashboard Admin dan Dashboard Guru sudah tersedia sebagai fondasi awal dan dapat diakses sesuai role. Namun dashboard belum siap sebagai dashboard operasional karena data masih hard-coded di komponen halaman, belum ada query/service/API dashboard, sebagian besar menu masih dead link `#`, tidak ada topbar, breadcrumb, collapse sidebar, drawer mobile, chart, tabel, aktivitas terbaru, loading state, empty state, atau error state.
+Dashboard Admin dan Dashboard Guru sudah tersedia sebagai fondasi awal dan dapat diakses sesuai role. Namun dashboard belum siap sebagai dashboard operasional karena data masih hard-coded di komponen halaman, belum ada query/service/API dashboard, sebagian besar menu masih placeholder, tidak ada topbar, breadcrumb, collapse sidebar, drawer mobile, chart, tabel, aktivitas terbaru, loading state, empty state, atau error state.
 
 Temuan utama:
 
 | Severity | Ringkasan |
 |---|---|
 | HIGH | Statistik Dashboard Admin dan Guru masih hard-coded, bukan hasil query database atau API. |
-| HIGH | Menu Data Guru, Data Siswa, Rombel, Agenda Mengajar, Absensi, dan Penilaian masih `href="#"`. |
+| HIGH | Menu Data Guru, Data Siswa, Rombel, Agenda Mengajar, Absensi, dan Penilaian masih memakai placeholder link. |
 | HIGH | Dashboard Guru belum mendukung alur jadwal hari ini -> mulai pertemuan -> absensi -> jurnal mengajar -> selesai pertemuan. |
 | MEDIUM | Tidak ada topbar/profile menu, breadcrumb, collapse sidebar, atau drawer mobile. |
 | MEDIUM | Tidak ada loading, empty, dan error state pada dashboard. |
@@ -57,7 +59,7 @@ Inventarisasi elemen aktual:
 | Aktivitas terbaru | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Perlu model/service audit log/aktivitas. |
 | Notifikasi | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Perlu untuk data belum lengkap. |
 | Tombol | Hanya `Keluar` di sidebar. | Client fetch logout. | POST `/api/v1/auth/logout`. | Tidak ada loading state logout. | Relevan. |
-| Tautan | Dashboard dan Branding Login valid; Data Guru/Siswa/Rombel `#`. | Static menu. | Dead link untuk 3 menu. | Tidak ada. | Harus dibuat sebelum Data Master selesai. |
+| Tautan | Dashboard dan Branding Login valid; Data Guru/Siswa/Rombel placeholder. | Static menu. | Dead link untuk 3 menu. | Tidak ada. | Harus dibuat sebelum Data Master selesai. |
 | Sidebar | Ada. | Static menu berdasarkan role prop. | Sebagian valid. | Tidak ada active state berbasis route nyata. | Perlu icons/active state/collapse. |
 | Topbar | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Perlu untuk profil, sekolah, breadcrumb. |
 
@@ -65,7 +67,7 @@ Bukti utama:
 
 - `src/app/dashboard/admin/page.tsx:6-11` mendefinisikan statistik langsung di array.
 - `src/app/dashboard/admin/page.tsx:47-62` melakukan render card dari array lokal.
-- `src/components/dashboard/dashboard-layout.tsx:27-33` mendefinisikan menu Admin, dengan `Data Guru`, `Data Siswa`, dan `Rombel` masih `href="#"`.
+- `src/components/dashboard/dashboard-layout.tsx:27-33` mendefinisikan menu Admin, dengan `Data Guru`, `Data Siswa`, dan `Rombel` masih memakai placeholder link.
 
 ## 4. Audit Dashboard Guru
 
@@ -77,14 +79,14 @@ Inventarisasi elemen aktual:
 | Jadwal hari ini | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Wajib untuk alur mengajar. |
 | Jadwal berikutnya | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Wajib untuk perencanaan guru. |
 | Aktivitas mengajar | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Belum mendukung operasional. |
-| Absensi | Hanya menu sidebar `Absensi` dengan `href="#"`. | Static menu. | Dead link. | Tidak ada. | Belum dapat dipakai. |
+| Absensi | Hanya menu sidebar `Absensi` dengan placeholder link. | Static menu. | Dead link. | Tidak ada. | Belum dapat dipakai. |
 | Jurnal | Tidak tersedia di UI dashboard. | Tidak ada. | Tidak ada. | Tidak ada. | Belum dapat dipakai. |
-| Penilaian | Hanya menu sidebar `Penilaian` dengan `href="#"`. | Static menu. | Dead link. | Tidak ada. | Belum dapat dipakai. |
+| Penilaian | Hanya menu sidebar `Penilaian` dengan placeholder link. | Static menu. | Dead link. | Tidak ada. | Belum dapat dipakai. |
 | Statistik | 4 card: Mata Pelajaran 1, Rombel 1, Pertemuan 2, Siswa 1. | Hard-coded array `stats`. | Tidak clickable. | Tidak ada. | Relevan, tetapi belum terhubung penugasan guru. |
 | Chart | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Belum ada ringkasan mingguan. |
 | Menu cepat | Tidak tersedia di konten utama. | Tidak ada. | Tidak ada. | Tidak ada. | Perlu untuk mulai pertemuan/absensi/jurnal. |
 | Tombol tindakan | Hanya logout. | Client fetch logout. | POST `/api/v1/auth/logout`. | Tidak ada loading state logout. | Perlu tombol mengajar. |
-| Sidebar | Ada menu role Guru. | Static role prop. | Dashboard valid, lainnya `#`. | Tidak ada active state nyata. | Perlu route operasional. |
+| Sidebar | Ada menu role Guru. | Static role prop. | Dashboard valid, lainnya placeholder. | Tidak ada active state nyata. | Perlu route operasional. |
 | Topbar | Tidak tersedia. | Tidak ada. | Tidak ada. | Tidak ada. | Perlu profil dan konteks jadwal. |
 
 Evaluasi alur Guru:
@@ -93,7 +95,7 @@ Evaluasi alur Guru:
 |---|---|---|
 | Jadwal hari ini | Belum ada. | Tidak ada kode jadwal di `src/app/dashboard/guru/page.tsx:1-67`. |
 | Mulai pertemuan | Belum ada tombol/state. | Hanya render stat card di `src/app/dashboard/guru/page.tsx:40-63`. |
-| Absensi | Belum ada halaman/tombol aktif. | Menu `Absensi` masih `href="#"` di `src/components/dashboard/dashboard-layout.tsx:37`. |
+| Absensi | Belum ada halaman/tombol aktif. | Menu `Absensi` masih memakai placeholder link di `src/components/dashboard/dashboard-layout.tsx:37`. |
 | Jurnal mengajar | Belum ada UI. | Model `TeachingJournal` ada di `prisma/schema.prisma:502`, tetapi dashboard tidak memakainya. |
 | Selesaikan pertemuan | Belum ada. | Tidak ada action/route terkait di dashboard Guru. |
 
@@ -103,12 +105,12 @@ Evaluasi alur Guru:
 |---|---|---|---|---|---|
 | `src/app/dashboard/admin/page.tsx:6-11` | Statistik Admin | `5`, `1`, `1`, `1` | Array hard-coded | Dummy/statis | Ganti dengan query/service dashboard Admin. |
 | `src/app/dashboard/guru/page.tsx:6-11` | Statistik Guru | `1`, `1`, `2`, `1` | Array hard-coded | Dummy/statis | Ganti dengan query berdasarkan user Guru dan teaching assignment. |
-| `src/components/dashboard/dashboard-layout.tsx:29` | Menu Data Guru | `href="#"` | Static menu | Placeholder/dead link | Arahkan ke route Data Guru setelah modul dibuat. |
-| `src/components/dashboard/dashboard-layout.tsx:30` | Menu Data Siswa | `href="#"` | Static menu | Placeholder/dead link | Arahkan ke route Data Siswa setelah modul dibuat. |
-| `src/components/dashboard/dashboard-layout.tsx:31` | Menu Rombel | `href="#"` | Static menu | Placeholder/dead link | Arahkan ke route Rombel setelah modul dibuat. |
-| `src/components/dashboard/dashboard-layout.tsx:36` | Menu Agenda Mengajar | `href="#"` | Static menu | Placeholder/dead link | Buat route agenda mengajar Guru. |
-| `src/components/dashboard/dashboard-layout.tsx:37` | Menu Absensi | `href="#"` | Static menu | Placeholder/dead link | Buat route absensi per pertemuan. |
-| `src/components/dashboard/dashboard-layout.tsx:38` | Menu Penilaian | `href="#"` | Static menu | Placeholder/dead link | Buat route input/rekap nilai. |
+| `src/components/dashboard/dashboard-layout.tsx:29` | Menu Data Guru | Placeholder link | Static menu | Placeholder/dead link | Arahkan ke route Data Guru setelah modul dibuat. |
+| `src/components/dashboard/dashboard-layout.tsx:30` | Menu Data Siswa | Placeholder link | Static menu | Placeholder/dead link | Arahkan ke route Data Siswa setelah modul dibuat. |
+| `src/components/dashboard/dashboard-layout.tsx:31` | Menu Rombel | Placeholder link | Static menu | Placeholder/dead link | Arahkan ke route Rombel setelah modul dibuat. |
+| `src/components/dashboard/dashboard-layout.tsx:36` | Menu Agenda Mengajar | Placeholder link | Static menu | Placeholder/dead link | Buat route agenda mengajar Guru. |
+| `src/components/dashboard/dashboard-layout.tsx:37` | Menu Absensi | Placeholder link | Static menu | Placeholder/dead link | Buat route absensi per pertemuan. |
+| `src/components/dashboard/dashboard-layout.tsx:38` | Menu Penilaian | Placeholder link | Static menu | Placeholder/dead link | Buat route input/rekap nilai. |
 | Dashboard Admin | Chart/tabel/aktivitas/notifikasi | Tidak ada | Tidak ada | Belum tersedia | Tambahkan setelah service data master tersedia. |
 | Dashboard Guru | Jadwal/pertemuan aktif/jurnal | Tidak ada | Tidak ada | Belum tersedia | Bangun alur Guru setelah modul penugasan dan meeting siap. |
 
@@ -116,9 +118,9 @@ Evaluasi alur Guru:
 
 | Area | Kondisi Aktual | Bukti | Risiko |
 |---|---|---|---|
-| Menu Admin | Dashboard dan Branding Login valid; Data Guru/Siswa/Rombel `#`. | `src/components/dashboard/dashboard-layout.tsx:27-33` | User menemukan menu mati saat mulai Data Master. |
-| Menu Guru | Dashboard valid; Agenda, Absensi, Penilaian `#`. | `src/components/dashboard/dashboard-layout.tsx:34-39` | Alur Guru belum dapat dijalankan. |
-| Active state | Semua link valid diberi background biru; tidak mengecek current pathname. | `src/components/dashboard/dashboard-layout.tsx:60-63` | `Branding Login` dan `Dashboard` bisa terlihat sama aktif jika href bukan `#`. |
+| Menu Admin | Dashboard dan Branding Login valid; Data Guru/Siswa/Rombel placeholder. | `src/components/dashboard/dashboard-layout.tsx:27-33` | User menemukan menu mati saat mulai Data Master. |
+| Menu Guru | Dashboard valid; Agenda, Absensi, Penilaian placeholder. | `src/components/dashboard/dashboard-layout.tsx:34-39` | Alur Guru belum dapat dijalankan. |
+| Active state | Semua link valid diberi background biru; tidak mengecek current pathname. | `src/components/dashboard/dashboard-layout.tsx:60-63` | `Branding Login` dan `Dashboard` bisa terlihat sama aktif jika target bukan route nyata. |
 | Collapse sidebar | Tidak tersedia. | CSS hanya flex/block responsive: `src/components/dashboard/dashboard-layout.module.css:1-76` | Desktop kecil tidak punya mode compact. |
 | Drawer mobile | Tidak tersedia. | Tidak ada button/drawer state di `dashboard-layout.tsx:1-84`. | Mobile menampilkan nav di atas, bukan drawer. |
 | Topbar | Tidak tersedia. | Browser audit `hasTopbar=false` di semua viewport. | Tidak ada profil user, sekolah aktif, quick action. |
@@ -296,7 +298,7 @@ Query pembanding database aktual:
 - Tambahkan active state berbasis `usePathname()`.
 - Tambahkan topbar sederhana berisi role/user dan logout/profile.
 - Tambahkan drawer mobile atau compact nav.
-- Ganti link `#` menjadi disabled state sementara atau route nyata.
+- Ganti placeholder link menjadi disabled state sementara atau route nyata.
 
 2. Data Master yang wajib tersedia
 
@@ -360,4 +362,3 @@ Yang belum siap:
 - Dashboard Guru belum memiliki alur mengajar.
 - Dashboard Admin belum memiliki quick action, aktivitas, notifikasi, chart, atau tabel.
 - Shell dashboard belum memiliki topbar, breadcrumb, collapse sidebar, drawer mobile, dan profile menu.
-

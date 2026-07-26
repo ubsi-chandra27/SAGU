@@ -18,7 +18,7 @@ Route berikut sudah tersedia pada implementasi saat ini.
 | Route | Deskripsi | Akses |
 |---|---|---|
 | `/login` | Halaman login dengan branding sekolah | Publik |
-| `/dashboard/admin` | Dashboard Admin | Admin |
+| `/dashboard/admin` | Dashboard Admin operasional: periode aktif, ringkasan data master, kesiapan data, dan akses cepat ke route nyata | Admin |
 | `/dashboard/guru` | Dashboard Guru | Guru |
 | `/dashboard/admin/pengaturan/branding-login` | Pengaturan branding halaman login | Admin |
 | `/dashboard/admin/data-master/tahun-ajaran` | Manajemen Tahun Ajaran dan Semester | Admin |

@@ -45,7 +45,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
-  const [academicStatus, setAcademicStatus] = useState("Tahun ajaran belum diatur");
+  const [academicStatus, setAcademicStatus] = useState("Periode belum diatur");
 
   const pageMeta = useMemo(
     () => getDashboardPageMeta(pathname, dashboardRole),
@@ -104,11 +104,11 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
           } else if (period?.academicYear?.name) {
             setAcademicStatus(`${period.academicYear.name} - semester belum diatur`);
           } else {
-            setAcademicStatus("Tahun ajaran belum diatur");
+            setAcademicStatus("Periode belum diatur");
           }
         }
       } catch {
-        if (!ignore) setAcademicStatus("Tahun ajaran belum diatur");
+        if (!ignore) setAcademicStatus("Periode belum diatur");
       }
     }
 
@@ -203,7 +203,10 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
           </div>
 
           <div className={styles.topbarActions}>
-            <span className={styles.academicStatus}>{academicStatus}</span>
+            <span className={styles.academicStatus}>
+              <DashboardIcon name="calendar" />
+              Periode Aktif: <strong>{academicStatus}</strong>
+            </span>
             <div className={styles.userMenu}>
               <button
                 aria-expanded={userMenuOpen}
@@ -236,6 +239,9 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
         </header>
 
         <main className={styles.content}>{children}</main>
+        <footer className={styles.dashboardFooter}>
+          SAGU - Sistem Administrasi Guru
+        </footer>
       </div>
 
       {drawerOpen ? (

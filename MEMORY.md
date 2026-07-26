@@ -100,3 +100,12 @@ MVP tidak mencakup:
 - Quality gate sprint Absensi Operasional MVP: `prisma validate`, `prisma generate`, `tsc --noEmit`, `npm run lint`, dan `npm run build` PASS pada 2026-07-26.
 - Data uji runtime sprint sudah di-soft-delete/dinonaktifkan setelah verifikasi. Periode aktif tetap harus dikonfirmasi dengan periode sekolah sebenarnya sebelum dipakai operasional nyata.
 - Tahap berikutnya: Jurnal Mengajar operasional dan penajaman laporan absensi lintas role sesuai kebutuhan sekolah.
+
+## Status Terkini - 2026-07-26 (Koreksi Dashboard Admin)
+
+- Nama resmi produk tetap `SAGU - Sistem Administrasi Guru`; variasi nama nonresmi dari instruksi audit tidak dipakai sebagai nama produk.
+- Dashboard Admin dikoreksi agar fokus pada scope terverifikasi: periode aktif, ringkasan data master berbasis database, kesiapan data, dan tindakan ke route yang benar-benar tersedia.
+- Card `Aktivitas Terbaru` dan `Pengumuman` tidak ditampilkan pada Dashboard Admin karena belum menjadi requirement MVP yang disetujui.
+- Breadcrumb Dashboard Admin root ditampilkan sebagai `Dashboard`; halaman Tahun Ajaran dan Semester memakai pola `Dashboard > Data Master > Tahun Ajaran & Semester`.
+- Modul Tahun Ajaran dan Semester tetap terverifikasi melalui UI, API, RBAC, database, aktivasi periode, soft delete, topbar periode aktif, dan screenshot halaman aktual.
+- Klaim implementasi UI berikutnya harus disertai screenshot halaman runtime aktual pada viewport yang relevan.

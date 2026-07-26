@@ -1,0 +1,385 @@
+.dashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.hero {
+  align-items: flex-end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.hero h1,
+.cardHeader h2 {
+  color: var(--dashboard-text-primary);
+  margin: 0;
+}
+
+.hero h1 {
+  font-size: 32px;
+  line-height: 40px;
+  margin-top: 12px;
+}
+
+.hero p {
+  color: var(--dashboard-text-secondary);
+  font-size: 15px;
+  line-height: 24px;
+  margin: 8px 0 0;
+  max-width: 720px;
+}
+
+.heroMeta {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 12px;
+  box-shadow: var(--dashboard-shadow);
+  display: grid;
+  gap: 4px;
+  min-width: 220px;
+  padding: 14px 16px;
+}
+
+.heroMeta span,
+.sectionEyebrow,
+.periodBox span,
+.emptyNote,
+.readinessItem small {
+  color: var(--dashboard-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.heroMeta strong {
+  color: var(--dashboard-text-primary);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.statsGrid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.statCard,
+.quickAction,
+.readinessItem,
+.primaryAction {
+  text-decoration: none;
+}
+
+.statCard {
+  align-items: center;
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 14px;
+  box-shadow: var(--dashboard-shadow);
+  color: var(--dashboard-text-primary);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: auto 1fr auto;
+  min-height: 128px;
+  min-width: 0;
+  padding: 18px;
+}
+
+.statCard:hover,
+.quickAction:hover,
+.readinessItem:hover,
+.primaryAction:hover {
+  border-color: var(--dashboard-primary);
+}
+
+.statIcon {
+  align-items: center;
+  border-radius: 9999px;
+  color: #ffffff;
+  display: inline-flex;
+  height: 56px;
+  justify-content: center;
+  width: 56px;
+}
+
+.blue {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.green {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.orange {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.violet {
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+}
+
+.statBody {
+  display: grid;
+  min-width: 0;
+}
+
+.statLabel {
+  color: var(--dashboard-text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.statBody strong {
+  color: var(--dashboard-text-primary);
+  font-size: 32px;
+  line-height: 40px;
+}
+
+.statBody span:last-child {
+  color: var(--dashboard-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cardArrow {
+  color: var(--dashboard-primary);
+  flex: 0 0 auto;
+}
+
+.mainGrid,
+.lowerGrid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+}
+
+.cardHeader {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.cardHeader h2 {
+  font-size: 18px;
+  line-height: 26px;
+  margin-top: 2px;
+}
+
+.textLink {
+  color: var(--dashboard-primary);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.attendanceContent {
+  align-items: center;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 180px 1fr;
+}
+
+.attendanceRing {
+  --ring-value: 0%;
+  align-items: center;
+  aspect-ratio: 1;
+  background: conic-gradient(var(--dashboard-primary) var(--ring-value), var(--dashboard-surface-muted) 0);
+  border-radius: 9999px;
+  display: grid;
+  justify-items: center;
+  place-content: center;
+  position: relative;
+}
+
+.attendanceRing::after {
+  background: var(--dashboard-surface);
+  border-radius: inherit;
+  content: "";
+  inset: 22px;
+  position: absolute;
+}
+
+.attendanceRing span,
+.attendanceRing small {
+  position: relative;
+  z-index: 1;
+}
+
+.attendanceRing span {
+  color: var(--dashboard-text-primary);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 36px;
+}
+
+.attendanceRing small {
+  color: var(--dashboard-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.attendanceRows,
+.readinessList {
+  display: grid;
+  gap: 10px;
+}
+
+.attendanceRow,
+.readinessItem {
+  align-items: center;
+  background: var(--dashboard-surface-muted);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--dashboard-text-primary);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 10px 12px;
+}
+
+.attendanceRow span {
+  color: var(--dashboard-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.periodGrid,
+.quickGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.periodGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.periodBox {
+  border: 1px solid var(--dashboard-border);
+  border-radius: 12px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.periodBox strong {
+  color: var(--dashboard-text-primary);
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.periodBox small {
+  color: var(--dashboard-text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.primaryAction {
+  align-items: center;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 10px;
+  color: var(--dashboard-primary);
+  display: flex;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 14px;
+  min-height: 44px;
+  padding: 0 14px;
+}
+
+.quickGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quickAction {
+  align-items: center;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 10px;
+  color: var(--dashboard-text-primary);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr auto;
+  min-height: 56px;
+  min-width: 0;
+  padding: 0 14px;
+}
+
+.quickAction span,
+.readinessItem strong {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.quickAction svg:first-child {
+  color: var(--dashboard-primary);
+}
+
+.readinessItem span {
+  display: grid;
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mainGrid,
+  .lowerGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .heroMeta {
+    min-width: 0;
+  }
+
+  .attendanceContent {
+    grid-template-columns: 1fr;
+  }
+
+  .attendanceRing {
+    justify-self: center;
+    max-width: 180px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard {
+    gap: 18px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+    line-height: 34px;
+  }
+
+  .statsGrid,
+  .periodGrid,
+  .quickGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    min-height: 116px;
+  }
+
+  .cardHeader {
+    align-items: flex-start;
+  }
+}
