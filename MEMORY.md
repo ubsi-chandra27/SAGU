@@ -109,3 +109,7 @@ MVP tidak mencakup:
 - Breadcrumb Dashboard Admin root ditampilkan sebagai `Dashboard`; halaman Tahun Ajaran dan Semester memakai pola `Dashboard > Data Master > Tahun Ajaran & Semester`.
 - Modul Tahun Ajaran dan Semester tetap terverifikasi melalui UI, API, RBAC, database, aktivasi periode, soft delete, topbar periode aktif, dan screenshot halaman aktual.
 - Klaim implementasi UI berikutnya harus disertai screenshot halaman runtime aktual pada viewport yang relevan.
+- Commit verifikasi Dashboard Admin: `16381a398ae40c77e7c8f0d0e1dee325a0f9e76d` (`fix: align dashboard with verified SAGU scope`).
+- Status push GitHub saat dokumentasi penutupan dibuat: local `main` masih di depan `origin/main`; push sebelumnya timeout dan sedang diselesaikan dengan retry aman.
+- Keputusan verifikasi: HTTP 200 pada route bukan bukti modul lengkap. Modul dinyatakan lengkap hanya jika CRUD, database, API, RBAC, dan pengujiannya terbukti.
+- Prioritas berikutnya tetap Absensi Operasional MVP dan audit Data Master minimum untuk absensi; Jurnal Mengajar belum menjadi prioritas berikutnya.
