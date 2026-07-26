@@ -8,7 +8,7 @@ Dokumen ini mencatat setiap perubahan signifikan pada proyek SAGU berdasarkan ve
 
 ### Changed
 
-- Status progres diselaraskan: Dashboard Admin selesai secara teknis, sedangkan sinkronisasi commit lokal ke GitHub dicatat sebagai proses penutupan sampai push berhasil.
+- Status progres diselaraskan: Dashboard Admin selesai secara teknis dan sinkronisasi commit lokal ke GitHub berhasil setelah timeout eksekusi push diperpanjang.
 - Modul Data Master minimum tidak lagi ditandai lengkap hanya berdasarkan route HTTP 200; bukti CRUD, database, API, RBAC, dan pengujian modul tetap diperlukan.
 - Prioritas berikutnya ditegaskan kembali sebagai Absensi Operasional MVP dan audit Data Master minimum untuk absensi.
 
