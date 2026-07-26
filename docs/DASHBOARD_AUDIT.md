@@ -1,6 +1,25 @@
 # Audit Dashboard SAGU
 
 > Catatan 2026-07-26: dokumen ini adalah snapshot historis sebelum koreksi Dashboard Admin, Data Master, dan Absensi Operasional MVP. Status aktual dicatat di `docs/TASKS.md`, `docs/ROUTES.md`, `MEMORY.md`, dan `docs/CHANGELOG.md`.
+>
+> Update 2026-07-26: Dashboard Admin sudah disempurnakan kembali dengan pola Shadcn Space secara selektif. Bukti runtime tersedia di `docs/screenshots/dashboard-shadcn-space/`. Status snapshot historis di bawah tetap dipertahankan untuk jejak audit awal, tetapi temuan hard-coded/dead link pada kode lama tidak lagi menggambarkan implementasi aktif.
+
+## Update Verifikasi Shadcn Space - 2026-07-26
+
+Status: READY WITH FIXES
+
+Perubahan aktif:
+
+- Toast sukses login ADMIN/GURU tampil satu kali setelah redirect ke dashboard dan tidak muncul ulang setelah refresh.
+- Dashboard Admin memakai data PostgreSQL aktual untuk guru, siswa, rombel, penugasan, mata pelajaran, periode aktif, absensi, pertemuan, dan siswa tidak hadir.
+- Dashboard Admin tidak memakai data dummy, chart dekoratif, aktivitas sistem palsu, notifikasi palsu, gambar eksternal demo, atau `href="#"` pada kode aktif.
+- Sidebar memakai visual shell ringan, collapse desktop, drawer mobile, dan grup Data Master collapsible.
+- Screenshot runtime baru dibuat untuk 1440x900, 1280x800, 1024x768, 768x1024, 390x844, 360x800, sidebar collapsed, mobile drawer, toast admin, dan toast guru.
+
+Catatan:
+
+- Proyek belum memakai Tailwind CSS, shadcn/ui, Sonner, Radix, Base UI, Motion, atau Lucide sebagai dependency. Pola Shadcn Space diadaptasi melalui CSS Modules dan komponen internal SAGU.
+- Jadwal Mengajar Hari Ini dan Siswa Tidak Hadir Hari Ini hanya menampilkan data jika ada catatan aktual; jika tidak ada, halaman menampilkan empty state.
 
 Audit ini memeriksa implementasi aktual Dashboard Admin dan Dashboard Guru sebelum pembangunan Data Master Akademik. Audit dilakukan terhadap kode, route runtime, query database pembanding, screenshot, RBAC, responsivitas, dan quality gate teknis.
 

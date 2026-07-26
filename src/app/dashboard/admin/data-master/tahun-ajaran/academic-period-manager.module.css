@@ -1,33 +1,62 @@
 .manager {
   display: grid;
-  gap: 24px;
+  gap: 18px;
 }
 
-.message {
-  align-items: flex-start;
-  border-radius: 8px;
+.commandPanel {
+  align-items: center;
   display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.commandCopy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.commandActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .panelGrid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.4fr);
+  gap: 18px;
+  grid-template-columns: minmax(240px, 0.46fr) minmax(0, 1fr);
+}
+
+.panelGrid:first-of-type {
+  grid-template-columns: 1fr;
 }
 
 .cardStack,
 .form,
 .tableHeader,
-.emptyState {
+.emptyState,
+.selectedSummary {
   display: grid;
-  gap: 16px;
+  gap: 14px;
+}
+
+.sectionEyebrow,
+.dialogHeader span {
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 18px;
+  text-transform: uppercase;
 }
 
 .sectionTitle {
   color: var(--color-text-primary);
   font-size: 18px;
-  font-weight: 700;
-  line-height: 24px;
+  font-weight: 750;
+  line-height: 26px;
   margin: 0;
 }
 
@@ -40,31 +69,51 @@
 
 .formGrid {
   display: grid;
-  gap: 12px;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .checkboxLabel {
   align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   color: var(--color-text-primary);
-  display: flex;
-  font-size: 14px;
-  font-weight: 600;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
   gap: 10px;
-  line-height: 22px;
+  line-height: 20px;
+  min-height: 42px;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .checkboxLabel input {
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-end;
+}
+
+.tableCard {
+  overflow: hidden;
+}
+
+.tableHeader {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
 }
 
 .tableWrap {
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
   overflow-x: auto;
 }
 
@@ -80,25 +129,29 @@
   color: var(--color-text-primary);
   font-size: 14px;
   line-height: 22px;
-  padding: 12px;
+  padding: 12px 14px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
 }
 
 .table th {
+  background: #f8fafc;
   color: var(--color-text-secondary);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 18px;
-  text-transform: uppercase;
 }
 
 .rowActive {
-  background: var(--color-primary-soft);
+  background: #eff6ff;
 }
 
 .rowArchived {
-  opacity: 0.62;
+  opacity: 0.58;
 }
 
 .rowButton {
@@ -107,7 +160,7 @@
   color: var(--color-primary);
   cursor: pointer;
   font: inherit;
-  font-weight: 700;
+  font-weight: 800;
   padding: 0;
   text-align: left;
 }
@@ -117,16 +170,60 @@
 }
 
 .statusStack {
-  align-items: flex-start;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
 .rowActions {
+  align-items: center;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
+}
+
+.iconButton {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-primary);
+  cursor: pointer;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  padding: 0;
+  transition: 150ms ease;
+  width: 36px;
+}
+
+.iconButton:hover {
+  background: var(--color-primary-soft);
+  border-color: #bfdbfe;
+}
+
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.successIcon {
+  color: #16a34a;
+}
+
+.successIcon:hover {
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+
+.dangerIcon {
+  color: #ef4444;
+}
+
+.dangerIcon:hover {
+  background: #fee2e2;
+  border-color: #fecaca;
 }
 
 .semesterHeader {
@@ -141,10 +238,11 @@
   gap: 8px;
 }
 
-.selectField span {
+.selectField span,
+.selectedSummary span {
   color: var(--color-text-primary);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 18px;
 }
 
@@ -158,65 +256,100 @@
   padding: 8px 12px;
 }
 
+.selectedSummary {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.selectedSummary strong {
+  color: var(--color-text-primary);
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.selectedSummary small {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+
 .emptyState {
   background: var(--color-surface-muted);
   border: 1px dashed var(--color-border);
   border-radius: 8px;
   color: var(--color-text-secondary);
-  padding: 18px;
+  padding: 22px;
 }
 
 .dialogBackdrop {
   align-items: center;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(15, 23, 42, 0.38);
   display: flex;
   inset: 0;
   justify-content: center;
   padding: 20px;
   position: fixed;
-  z-index: 60;
+  z-index: 80;
 }
 
 .dialog {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
   display: grid;
   gap: 18px;
-  max-width: 460px;
-  padding: 24px;
+  max-height: min(720px, calc(100vh - 40px));
+  max-width: 620px;
+  overflow: auto;
+  padding: 22px;
   width: 100%;
 }
 
+.dialogHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
 @media (max-width: 1080px) {
+  .commandPanel,
+  .tableHeader,
+  .semesterHeader {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .commandActions,
+  .actions {
+    justify-content: flex-start;
+  }
+
   .panelGrid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (min-width: 1081px) {
-  .table {
-    min-width: 0;
-  }
-
-  .table th,
-  .table td {
-    padding: 10px;
-  }
-
-  .rowActions {
-    gap: 6px;
-  }
-}
-
 @media (max-width: 640px) {
-  .semesterHeader {
-    display: grid;
+  .formGrid {
+    grid-template-columns: 1fr;
   }
 
+  .commandActions,
   .actions,
   .rowActions {
     display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .checkboxLabel {
+    justify-content: flex-start;
+  }
+
+  .iconButton {
+    width: 100%;
   }
 }

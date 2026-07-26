@@ -1,57 +1,57 @@
 .dashboard {
   display: grid;
-  gap: 24px;
+  gap: 18px;
 }
 
-.hero {
-  align-items: flex-end;
+.header {
+  align-items: flex-start;
   display: flex;
   gap: 20px;
   justify-content: space-between;
 }
 
-.hero h1,
+.header h1,
 .cardHeader h2 {
   color: var(--dashboard-text-primary);
+  letter-spacing: 0;
   margin: 0;
 }
 
-.hero h1 {
-  font-size: 32px;
-  line-height: 40px;
-  margin-top: 12px;
+.header h1 {
+  font-size: 28px;
+  line-height: 36px;
 }
 
-.hero p {
+.header p {
   color: var(--dashboard-text-secondary);
-  font-size: 15px;
-  line-height: 24px;
-  margin: 8px 0 0;
-  max-width: 720px;
+  font-size: 14px;
+  line-height: 22px;
+  margin: 6px 0 0;
 }
 
-.heroMeta {
-  background: var(--dashboard-surface);
+.headerPeriod {
+  background: #ffffff;
   border: 1px solid var(--dashboard-border);
-  border-radius: 12px;
-  box-shadow: var(--dashboard-shadow);
+  border-radius: 8px;
   display: grid;
-  gap: 4px;
-  min-width: 220px;
-  padding: 14px 16px;
+  gap: 3px;
+  min-width: 260px;
+  padding: 12px 14px;
 }
 
-.heroMeta span,
+.headerPeriod span,
+.headerPeriod small,
 .sectionEyebrow,
-.periodBox span,
-.emptyNote,
-.readinessItem small {
+.emptyState,
+.statBody small,
+.readinessCopy small,
+.absentItem small {
   color: var(--dashboard-text-secondary);
   font-size: 12px;
   line-height: 18px;
 }
 
-.heroMeta strong {
+.headerPeriod strong {
   color: var(--dashboard-text-primary);
   font-size: 14px;
   line-height: 22px;
@@ -59,327 +59,291 @@
 
 .statsGrid {
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .statCard,
-.quickAction,
 .readinessItem,
-.primaryAction {
+.quickAction {
   text-decoration: none;
 }
 
 .statCard {
   align-items: center;
-  background: var(--dashboard-surface);
+  background: #ffffff;
   border: 1px solid var(--dashboard-border);
-  border-radius: 14px;
-  box-shadow: var(--dashboard-shadow);
+  border-radius: 8px;
   color: var(--dashboard-text-primary);
   display: grid;
-  gap: 14px;
+  gap: 12px;
   grid-template-columns: auto 1fr auto;
-  min-height: 128px;
+  min-height: 104px;
   min-width: 0;
-  padding: 18px;
+  padding: 15px;
+  transition: 160ms ease;
 }
 
 .statCard:hover,
-.quickAction:hover,
 .readinessItem:hover,
-.primaryAction:hover {
-  border-color: var(--dashboard-primary);
+.quickAction:hover {
+  border-color: rgba(37, 99, 235, 0.34);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
 }
 
 .statIcon {
   align-items: center;
-  border-radius: 9999px;
-  color: #ffffff;
+  background: var(--dashboard-primary-soft);
+  border-radius: 8px;
+  color: var(--dashboard-primary);
   display: inline-flex;
-  height: 56px;
+  height: 40px;
   justify-content: center;
-  width: 56px;
-}
-
-.blue {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-}
-
-.green {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.orange {
-  background: linear-gradient(135deg, #f59e0b, #f97316);
-}
-
-.violet {
-  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  width: 40px;
 }
 
 .statBody {
   display: grid;
+  gap: 2px;
   min-width: 0;
 }
 
-.statLabel {
-  color: var(--dashboard-text-primary);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 22px;
+.statBody span {
+  color: var(--dashboard-text-secondary);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 18px;
 }
 
 .statBody strong {
   color: var(--dashboard-text-primary);
-  font-size: 32px;
-  line-height: 40px;
-}
-
-.statBody span:last-child {
-  color: var(--dashboard-text-secondary);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 28px;
+  line-height: 34px;
 }
 
 .cardArrow {
-  color: var(--dashboard-primary);
+  color: var(--dashboard-text-muted);
   flex: 0 0 auto;
 }
 
-.mainGrid,
-.lowerGrid {
+.operationalGrid {
+  align-items: start;
   display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  gap: 12px;
+  grid-template-columns: minmax(0, 7fr) minmax(340px, 5fr);
+}
+
+.lowerGrid {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.84fr);
 }
 
 .cardHeader {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   gap: 16px;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 15px;
 }
 
 .cardHeader h2 {
-  font-size: 18px;
-  line-height: 26px;
+  font-size: 17px;
+  line-height: 24px;
   margin-top: 2px;
+}
+
+.sectionEyebrow {
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.readinessList,
+.attendanceList,
+.scheduleList,
+.absentList {
+  display: grid;
+  gap: 8px;
+}
+
+.readinessItem {
+  align-items: center;
+  border: 1px solid var(--dashboard-divider);
+  border-radius: 8px;
+  color: var(--dashboard-text-primary);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  min-height: 58px;
+  padding: 10px 12px;
+  transition: 160ms ease;
+}
+
+.readinessStatus {
+  align-items: center;
+  background: #fef3c7;
+  border-radius: 9999px;
+  color: #d97706;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.readinessStatus[data-ready="true"] {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.readinessCopy {
+  display: grid;
+  min-width: 0;
+}
+
+.readinessCopy strong,
+.quickAction span,
+.absentItem strong {
+  color: var(--dashboard-text-primary);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 22px;
 }
 
 .textLink {
   color: var(--dashboard-primary);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 20px;
   text-decoration: none;
-}
-
-.attendanceContent {
-  align-items: center;
-  display: grid;
-  gap: 24px;
-  grid-template-columns: 180px 1fr;
-}
-
-.attendanceRing {
-  --ring-value: 0%;
-  align-items: center;
-  aspect-ratio: 1;
-  background: conic-gradient(var(--dashboard-primary) var(--ring-value), var(--dashboard-surface-muted) 0);
-  border-radius: 9999px;
-  display: grid;
-  justify-items: center;
-  place-content: center;
-  position: relative;
-}
-
-.attendanceRing::after {
-  background: var(--dashboard-surface);
-  border-radius: inherit;
-  content: "";
-  inset: 22px;
-  position: absolute;
-}
-
-.attendanceRing span,
-.attendanceRing small {
-  position: relative;
-  z-index: 1;
-}
-
-.attendanceRing span {
-  color: var(--dashboard-text-primary);
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 36px;
-}
-
-.attendanceRing small {
-  color: var(--dashboard-text-secondary);
-  font-size: 12px;
-  line-height: 18px;
-}
-
-.attendanceRows,
-.readinessList {
-  display: grid;
-  gap: 10px;
+  white-space: nowrap;
 }
 
 .attendanceRow,
-.readinessItem {
+.scheduleItem,
+.absentItem {
   align-items: center;
   background: var(--dashboard-surface-muted);
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--dashboard-text-primary);
   display: flex;
   gap: 12px;
   justify-content: space-between;
-  min-height: 48px;
-  padding: 10px 12px;
+  min-height: 44px;
+  padding: 9px 11px;
 }
 
-.attendanceRow span {
+.attendanceRow span,
+.scheduleItem span {
   color: var(--dashboard-text-secondary);
   font-size: 13px;
   line-height: 20px;
 }
 
-.periodGrid,
-.quickGrid {
-  display: grid;
-  gap: 12px;
+.attendanceRow strong {
+  font-size: 16px;
+  line-height: 24px;
 }
 
-.periodGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.emptyState {
+  background: var(--dashboard-surface-muted);
+  border: 1px dashed var(--dashboard-border);
+  border-radius: 8px;
+  padding: 18px;
 }
 
-.periodBox {
-  border: 1px solid var(--dashboard-border);
-  border-radius: 12px;
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-  padding: 14px;
+.scheduleItem {
+  background: #ffffff;
+  border-color: var(--dashboard-divider);
 }
 
-.periodBox strong {
-  color: var(--dashboard-text-primary);
-  font-size: 20px;
-  line-height: 28px;
-}
-
-.periodBox small {
-  color: var(--dashboard-text-muted);
-  font-size: 12px;
-  line-height: 18px;
-}
-
-.primaryAction {
-  align-items: center;
-  border: 1px solid var(--dashboard-border);
-  border-radius: 10px;
-  color: var(--dashboard-primary);
-  display: flex;
+.scheduleItem strong {
   font-size: 14px;
-  font-weight: 700;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 14px;
-  min-height: 44px;
-  padding: 0 14px;
+  line-height: 22px;
+  min-width: 110px;
+}
+
+.absentItem > span {
+  display: grid;
+  min-width: 0;
+}
+
+.quickCard {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .quickGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .quickAction {
   align-items: center;
+  background: #ffffff;
   border: 1px solid var(--dashboard-border);
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--dashboard-text-primary);
   display: grid;
   gap: 10px;
   grid-template-columns: auto 1fr auto;
-  min-height: 56px;
+  min-height: 48px;
   min-width: 0;
-  padding: 0 14px;
-}
-
-.quickAction span,
-.readinessItem strong {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 22px;
+  padding: 0 12px;
+  transition: 160ms ease;
 }
 
 .quickAction svg:first-child {
   color: var(--dashboard-primary);
 }
 
-.readinessItem span {
-  display: grid;
-  min-width: 0;
-}
-
 @media (max-width: 1180px) {
-  .statsGrid {
+  .statsGrid,
+  .quickGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .mainGrid,
+  .operationalGrid,
   .lowerGrid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 760px) {
-  .hero {
-    align-items: stretch;
+  .header {
     display: grid;
   }
 
-  .heroMeta {
+  .headerPeriod {
     min-width: 0;
-  }
-
-  .attendanceContent {
-    grid-template-columns: 1fr;
-  }
-
-  .attendanceRing {
-    justify-self: center;
-    max-width: 180px;
-    width: 100%;
   }
 }
 
 @media (max-width: 560px) {
   .dashboard {
-    gap: 18px;
+    gap: 14px;
   }
 
-  .hero h1 {
-    font-size: 26px;
-    line-height: 34px;
+  .header h1 {
+    font-size: 25px;
+    line-height: 32px;
   }
 
   .statsGrid,
-  .periodGrid,
   .quickGrid {
     grid-template-columns: 1fr;
   }
 
   .statCard {
-    min-height: 116px;
+    min-height: 96px;
   }
 
-  .cardHeader {
+  .cardHeader,
+  .attendanceRow,
+  .scheduleItem,
+  .absentItem {
     align-items: flex-start;
   }
 }

@@ -105,6 +105,9 @@ Komponen dasar berada di `src/components/ui/` dan wajib memakai `src/styles/toke
 - Statistik memakai Card, Badge status, dan angka Display.
 - Konten placeholder boleh sederhana selama role dan permission tetap dipertimbangkan.
 - Sidebar/topbar mengikuti pola navigasi konsisten per role.
+- Dashboard Admin terbaru mengadopsi pola Shadcn Space secara selektif: sidebar putih dengan border tipis, Data Master collapsible, topbar sticky ringkas, card rendah dengan border halus, grid asimetris, dan empty state tanpa data dummy.
+- Toast login memakai provider global internal, posisi top-right desktop dan top-center mobile, durasi sekitar 3-4 detik, serta `aria-live="polite"`.
+- Jangan menampilkan pencarian global, chart, notifikasi, aktivitas sistem, atau data demo bila sumber data aktual belum tersedia.
 
 ## 9. Konvensi UX dari Referensi Lama
 

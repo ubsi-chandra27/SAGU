@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui";
+import { Button, useToast } from "@/components/ui";
 import { tokens, withAlpha } from "@/styles/tokens";
 import { DashboardIcon } from "./dashboard-icons";
 import {
@@ -44,13 +44,22 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [openNavGroups, setOpenNavGroups] = useState<Record<string, boolean>>({
+    "Data Master": true,
+  });
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
   const [academicStatus, setAcademicStatus] = useState("Periode belum diatur");
+  const { showToast } = useToast();
 
   const pageMeta = useMemo(
     () => getDashboardPageMeta(pathname, dashboardRole),
     [dashboardRole, pathname],
   );
+  const displayName =
+    sessionUser?.fullName || sessionUser?.username || sessionUser?.email || "Pengguna SAGU";
+  const displayRole = roleLabels[dashboardRole];
 
   useEffect(() => {
     const stored = window.localStorage.getItem("sagu-dashboard-sidebar-collapsed");
@@ -84,6 +93,32 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    const rawFlag = window.sessionStorage.getItem("sagu:login-success");
+    if (!rawFlag) return;
+
+    window.sessionStorage.removeItem("sagu:login-success");
+
+    try {
+      const flag = JSON.parse(rawFlag) as { name?: string; role?: string };
+      const isAdmin = flag.role === "ADMIN" || dashboardRole === "admin";
+      showToast({
+        title: isAdmin
+          ? "Login berhasil. Selamat datang, Administrator."
+          : `Login berhasil. Selamat datang, ${flag.name || displayName}.`,
+        tone: "success",
+      });
+    } catch {
+      showToast({
+        title:
+          dashboardRole === "admin"
+            ? "Login berhasil. Selamat datang, Administrator."
+            : `Login berhasil. Selamat datang, ${displayName}.`,
+        tone: "success",
+      });
+    }
+  }, [dashboardRole, displayName, showToast]);
 
   useEffect(() => {
     let ignore = false;
@@ -134,6 +169,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
       if (event.key === "Escape") {
         setDrawerOpen(false);
         setUserMenuOpen(false);
+        setLogoutModalOpen(false);
       }
     }
 
@@ -141,11 +177,31 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
-  async function handleLogout() {
+  function handleLogout() {
+    setUserMenuOpen(false);
+    setLogoutModalOpen(true);
+  }
+
+  async function confirmLogout() {
+    setLogoutLoading(true);
     try {
-      await fetch("/api/v1/auth/logout", { method: "POST" });
+      const response = await fetch("/api/v1/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error("Logout gagal diproses");
+      showToast({
+        description: "Sesi Anda sudah ditutup.",
+        title: "Logout berhasil",
+        tone: "success",
+      });
+      setLogoutModalOpen(false);
+      window.setTimeout(() => router.push("/login"), 520);
+    } catch (error) {
+      showToast({
+        description: error instanceof Error ? error.message : "Coba beberapa saat lagi.",
+        title: "Logout gagal",
+        tone: "danger",
+      });
     } finally {
-      router.push("/login");
+      setLogoutLoading(false);
     }
   }
 
@@ -165,10 +221,6 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
     "--dashboard-shadow": tokens.shadow.card,
   } as CSSProperties;
 
-  const displayName =
-    sessionUser?.fullName || sessionUser?.username || sessionUser?.email || "Pengguna SAGU";
-  const displayRole = roleLabels[dashboardRole];
-
   return (
     <div className={styles.shell} style={layoutVars}>
       <aside
@@ -179,8 +231,12 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
           collapsed={collapsed}
           displayName={displayName}
           displayRole={displayRole}
+          onGroupToggle={(label) =>
+            setOpenNavGroups((current) => ({ ...current, [label]: !current[label] }))
+          }
           onCollapseToggle={() => setCollapsed((value) => !value)}
           onLogout={handleLogout}
+          openGroups={openNavGroups}
           pathname={pathname}
           role={dashboardRole}
         />
@@ -270,7 +326,11 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             </div>
             <NavigationLinks
               collapsed={false}
+              onGroupToggle={(label) =>
+                setOpenNavGroups((current) => ({ ...current, [label]: !current[label] }))
+              }
               onNavigate={() => setDrawerOpen(false)}
+              openGroups={openNavGroups}
               pathname={pathname}
               role={dashboardRole}
             />
@@ -283,6 +343,36 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
           </aside>
         </>
       ) : null}
+
+      {logoutModalOpen ? (
+        <div className={styles.modalBackdrop} role="presentation">
+          <div aria-modal="true" className={styles.confirmDialog} role="dialog">
+            <div className={styles.confirmIcon}>
+              <DashboardIcon name="logout" />
+            </div>
+            <div className={styles.confirmCopy}>
+              <h2>Keluar dari SAGU?</h2>
+              <p>Anda perlu login kembali untuk membuka dashboard dan data sekolah.</p>
+            </div>
+            <div className={styles.confirmActions}>
+              <Button
+                disabled={logoutLoading}
+                onClick={confirmLogout}
+                variant="danger"
+              >
+                {logoutLoading ? "Memproses..." : "Ya, keluar"}
+              </Button>
+              <Button
+                disabled={logoutLoading}
+                onClick={() => setLogoutModalOpen(false)}
+                variant="outline"
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -292,7 +382,9 @@ function SidebarContent({
   displayName,
   displayRole,
   onCollapseToggle,
+  onGroupToggle,
   onLogout,
+  openGroups,
   pathname,
   role,
 }: {
@@ -300,7 +392,9 @@ function SidebarContent({
   displayName: string;
   displayRole: string;
   onCollapseToggle: () => void;
+  onGroupToggle: (label: string) => void;
   onLogout: () => void;
+  openGroups: Record<string, boolean>;
   pathname: string;
   role: DashboardRole;
 }) {
@@ -319,7 +413,13 @@ function SidebarContent({
         </button>
       </div>
 
-      <NavigationLinks collapsed={collapsed} pathname={pathname} role={role} />
+      <NavigationLinks
+        collapsed={collapsed}
+        onGroupToggle={onGroupToggle}
+        openGroups={openGroups}
+        pathname={pathname}
+        role={role}
+      />
       <SidebarFooter
         collapsed={collapsed}
         displayName={displayName}
@@ -346,12 +446,16 @@ function Brand({ collapsed }: { collapsed: boolean }) {
 
 function NavigationLinks({
   collapsed,
+  onGroupToggle,
   onNavigate,
+  openGroups,
   pathname,
   role,
 }: {
   collapsed: boolean;
+  onGroupToggle?: (label: string) => void;
   onNavigate?: () => void;
+  openGroups?: Record<string, boolean>;
   pathname: string;
   role: DashboardRole;
 }) {
@@ -361,8 +465,25 @@ function NavigationLinks({
     <nav className={styles.nav}>
       {groups.map((group) => (
         <div className={styles.navGroup} key={`${role}-${group.label}`}>
-          {!collapsed ? <p className={styles.navGroupLabel}>{group.label}</p> : null}
-          {group.items.map((item) => {
+          {!collapsed ? (
+            group.label === "Data Master" ? (
+              <button
+                aria-expanded={openGroups?.[group.label] !== false}
+                className={styles.navGroupToggle}
+                onClick={() => onGroupToggle?.(group.label)}
+                type="button"
+              >
+                <span>{group.label}</span>
+                <DashboardIcon
+                  className={styles.navGroupChevron}
+                  name={openGroups?.[group.label] === false ? "chevronRight" : "chevronLeft"}
+                />
+              </button>
+            ) : (
+              <p className={styles.navGroupLabel}>{group.label}</p>
+            )
+          ) : null}
+          {(collapsed || group.label !== "Data Master" || openGroups?.[group.label] !== false) ? group.items.map((item) => {
             const active = isNavItemActive(pathname, item.href);
 
             return (
@@ -378,7 +499,7 @@ function NavigationLinks({
                 {!collapsed ? <span className={styles.navText}>{item.label}</span> : null}
               </Link>
             );
-          })}
+          }) : null}
         </div>
       ))}
     </nav>

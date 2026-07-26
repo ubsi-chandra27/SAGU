@@ -1,16 +1,20 @@
 .pageHeader {
   align-items: flex-start;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
   display: grid;
-  gap: 12px;
+  gap: 10px;
   justify-items: start;
-  max-width: 760px;
+  padding: 20px;
 }
 
 .pageHeaderTitle {
   color: var(--dashboard-text-primary);
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  line-height: 36px;
+  line-height: 32px;
   margin: 0;
 }
 

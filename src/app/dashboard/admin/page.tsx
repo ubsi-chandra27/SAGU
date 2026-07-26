@@ -1,52 +1,47 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import DashboardLayout from "@/components/dashboard/dashboard-layout";
 import { DashboardIcon } from "@/components/dashboard/dashboard-icons";
 import { Badge, Card } from "@/components/ui";
 import prisma from "@/lib/prisma";
 import styles from "./page.module.css";
 
-type Tone = "blue" | "green" | "orange" | "violet";
+type StatKey = "teachers" | "students" | "rombels" | "assignments";
+type AttendanceStatus = "HADIR" | "IZIN" | "SAKIT" | "ALPHA" | "TERLAMBAT";
 
 const statMeta: {
   description: string;
   href: string;
-  icon: "book" | "calendar" | "clipboard" | "school" | "user";
-  key: "teachers" | "students" | "rombels" | "assignments";
+  icon: "clipboard" | "school" | "user";
+  key: StatKey;
   label: string;
-  tone: Tone;
 }[] = [
   {
     key: "teachers",
-    label: "Total Guru",
-    description: "Guru aktif terdaftar",
+    label: "Guru aktif",
+    description: "Guru dengan akun aktif",
     href: "/dashboard/admin/data-master/guru",
     icon: "user",
-    tone: "blue",
   },
   {
     key: "students",
-    label: "Total Siswa",
+    label: "Siswa aktif",
     description: "Siswa nonarsip",
     href: "/dashboard/admin/data-master/siswa",
     icon: "school",
-    tone: "green",
   },
   {
     key: "rombels",
-    label: "Total Rombel",
-    description: "Rombongan belajar aktif",
+    label: "Rombel aktif",
+    description: "Rombongan belajar",
     href: "/dashboard/admin/data-master/rombel",
     icon: "school",
-    tone: "orange",
   },
   {
     key: "assignments",
-    label: "Penugasan Mengajar",
-    description: "Penugasan aktif berjalan",
+    label: "Penugasan aktif",
+    description: "Penugasan mengajar",
     href: "/dashboard/admin/data-master/penugasan-mengajar",
     icon: "clipboard",
-    tone: "violet",
   },
 ];
 
@@ -59,42 +54,24 @@ const quickActions = [
   {
     href: "/dashboard/admin/data-master/guru",
     icon: "user" as const,
-    label: "Kelola Guru",
+    label: "Tambah Guru",
   },
   {
     href: "/dashboard/admin/data-master/siswa",
     icon: "school" as const,
-    label: "Kelola Siswa",
-  },
-  {
-    href: "/dashboard/admin/data-master/rombel",
-    icon: "school" as const,
-    label: "Kelola Rombel",
-  },
-  {
-    href: "/dashboard/admin/data-master/mata-pelajaran",
-    icon: "book" as const,
-    label: "Kelola Mapel",
+    label: "Tambah Siswa",
   },
   {
     href: "/dashboard/admin/data-master/penugasan-mengajar",
     icon: "clipboard" as const,
-    label: "Buat Penugasan Mengajar",
-  },
-  {
-    href: "/dashboard/admin/rekap-absensi",
-    icon: "print" as const,
-    label: "Rekap Absensi",
+    label: "Buat Penugasan",
   },
 ];
 
-function formatDateTime(value: Date) {
+function formatTime(value: Date) {
   return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    month: "long",
-    year: "numeric",
   }).format(value);
 }
 
@@ -105,6 +82,24 @@ function formatDate(value: Date | null | undefined) {
     month: "short",
     year: "numeric",
   }).format(value);
+}
+
+function formatAttendanceStatus(status: AttendanceStatus) {
+  const labels: Record<AttendanceStatus, string> = {
+    HADIR: "Hadir",
+    IZIN: "Izin",
+    SAKIT: "Sakit",
+    ALPHA: "Alfa",
+    TERLAMBAT: "Terlambat",
+  };
+  return labels[status];
+}
+
+function getSlotStatus(startTime: Date, endTime: Date) {
+  const now = new Date();
+  if (now < startTime) return "Akan Datang";
+  if (now > endTime) return "Selesai";
+  return "Berlangsung";
 }
 
 export default async function AdminDashboardPage() {
@@ -120,6 +115,8 @@ export default async function AdminDashboardPage() {
     activeYear,
     activeSemester,
     attendanceSummary,
+    todayMeetings,
+    absentStudents,
   ] = await Promise.all([
     prisma.teacher.count({ where: { deletedAt: null, user: { isActive: true } } }),
     prisma.student.count({ where: { deletedAt: null } }),
@@ -140,201 +137,279 @@ export default async function AdminDashboardPage() {
       _count: { _all: true },
       where: { attendanceDate: today, deletedAt: null },
     }),
+    prisma.meeting.findMany({
+      include: {
+        teachingAssignment: {
+          include: {
+            rombel: true,
+          },
+        },
+      },
+      orderBy: [{ startTime: "asc" }, { endTime: "asc" }],
+      where: { deletedAt: null, meetingDate: today },
+    }),
+    prisma.attendance.findMany({
+      include: {
+        rombel: true,
+        student: {
+          include: {
+            user: {
+              include: { profile: true },
+            },
+          },
+        },
+      },
+      orderBy: [{ rombel: { name: "asc" } }, { student: { nis: "asc" } }],
+      take: 10,
+      where: {
+        attendanceDate: today,
+        deletedAt: null,
+        status: { in: ["IZIN", "SAKIT", "ALPHA", "TERLAMBAT"] },
+      },
+    }),
   ]);
 
-  const stats = {
+  const stats: Record<StatKey, number> = {
     teachers: activeTeachers,
     students: activeStudents,
     rombels: activeRombels,
     assignments: activeAssignments,
   };
 
+  const attendanceCounts = new Map<AttendanceStatus, number>(
+    attendanceSummary.map((item) => [item.status as AttendanceStatus, item._count._all]),
+  );
   const attendanceTotal = attendanceSummary.reduce((total, item) => total + item._count._all, 0);
-  const presentToday =
-    attendanceSummary.find((item) => item.status === "HADIR")?._count._all || 0;
-  const attendancePercent = attendanceTotal
-    ? Math.round((presentToday / attendanceTotal) * 100)
-    : 0;
-
   const readiness = [
     {
       href: "/dashboard/admin/data-master/tahun-ajaran",
-      label: "Periode akademik",
-      value: activeYear && activeSemester ? "Siap" : "Perlu dilengkapi",
-      tone: activeYear && activeSemester ? "success" : "warning",
+      label: "Periode aktif",
+      summary:
+        activeYear && activeSemester
+          ? `${activeYear.name} - ${activeSemester.name}`
+          : "Tahun ajaran atau semester belum aktif",
+      ready: Boolean(activeYear && activeSemester),
     },
     {
       href: "/dashboard/admin/data-master/guru",
-      label: "Data guru",
-      value: activeTeachers > 0 ? `${activeTeachers} aktif` : "Kosong",
-      tone: activeTeachers > 0 ? "success" : "warning",
+      label: "Guru",
+      summary: activeTeachers > 0 ? `${activeTeachers} guru aktif` : "Belum ada guru aktif",
+      ready: activeTeachers > 0,
     },
     {
       href: "/dashboard/admin/data-master/siswa",
-      label: "Data siswa",
-      value: activeStudents > 0 ? `${activeStudents} siswa` : "Kosong",
-      tone: activeStudents > 0 ? "success" : "warning",
+      label: "Siswa",
+      summary: activeStudents > 0 ? `${activeStudents} siswa aktif` : "Belum ada siswa",
+      ready: activeStudents > 0,
+    },
+    {
+      href: "/dashboard/admin/data-master/rombel",
+      label: "Rombel",
+      summary: activeRombels > 0 ? `${activeRombels} rombel aktif` : "Belum ada rombel",
+      ready: activeRombels > 0,
+    },
+    {
+      href: "/dashboard/admin/data-master/mata-pelajaran",
+      label: "Mata pelajaran",
+      summary: activeSubjects > 0 ? `${activeSubjects} mata pelajaran` : "Belum ada mapel",
+      ready: activeSubjects > 0,
     },
     {
       href: "/dashboard/admin/data-master/penugasan-mengajar",
-      label: "Penugasan",
-      value: activeAssignments > 0 ? `${activeAssignments} aktif` : "Kosong",
-      tone: activeAssignments > 0 ? "success" : "warning",
+      label: "Penugasan mengajar",
+      summary:
+        activeAssignments > 0
+          ? `${activeAssignments} penugasan aktif`
+          : "Belum ada penugasan",
+      ready: activeAssignments > 0,
     },
-  ] as const;
+  ];
+
+  const meetingSlots = Array.from(
+    todayMeetings.reduce((slots, meeting) => {
+      const key = `${formatTime(meeting.startTime)}-${formatTime(meeting.endTime)}`;
+      const current = slots.get(key) || {
+        classCount: 0,
+        endTime: meeting.endTime,
+        label: `${formatTime(meeting.startTime)}-${formatTime(meeting.endTime)}`,
+        rombels: new Set<string>(),
+        startTime: meeting.startTime,
+      };
+      current.classCount += 1;
+      current.rombels.add(meeting.teachingAssignment.rombel.name);
+      slots.set(key, current);
+      return slots;
+    }, new Map<string, { classCount: number; endTime: Date; label: string; rombels: Set<string>; startTime: Date }>()),
+  ).map(([, slot]) => slot);
 
   return (
     <DashboardLayout role="admin">
       <div className={styles.dashboard}>
-        <section className={styles.hero} aria-labelledby="admin-dashboard-title">
+        <section className={styles.header} aria-labelledby="admin-dashboard-title">
           <div>
-            <Badge tone="info">Admin</Badge>
             <h1 id="admin-dashboard-title">Dashboard Admin</h1>
-            <p>
-              Ringkasan operasional SAGU untuk periode aktif, data master, dan kesiapan
-              absensi sekolah.
-            </p>
+            <p>Ringkasan operasional administrasi sekolah hari ini.</p>
           </div>
-          <div className={styles.heroMeta}>
-            <span>Terakhir diperbarui</span>
-            <strong>{formatDateTime(new Date())}</strong>
+          <div className={styles.headerPeriod}>
+            <span>Periode aktif</span>
+            <strong>
+              {activeYear && activeSemester
+                ? `${activeYear.name} - ${activeSemester.name}`
+                : "Belum lengkap"}
+            </strong>
+            <small>
+              {formatDate(activeYear?.startDate)} - {formatDate(activeYear?.endDate)}
+            </small>
           </div>
         </section>
 
-        <section className={styles.statsGrid} aria-label="Statistik utama admin">
+        <section className={styles.statsGrid} aria-label="Ringkasan utama">
           {statMeta.map((item) => (
             <Link className={styles.statCard} href={item.href} key={item.key}>
-              <span className={`${styles.statIcon} ${styles[item.tone]}`}>
+              <span className={styles.statIcon}>
                 <DashboardIcon name={item.icon} />
               </span>
               <span className={styles.statBody}>
-                <span className={styles.statLabel}>{item.label}</span>
+                <span>{item.label}</span>
                 <strong>{stats[item.key]}</strong>
-                <span>{item.description}</span>
+                <small>{item.description}</small>
               </span>
               <DashboardIcon className={styles.cardArrow} name="chevronRight" />
             </Link>
           ))}
         </section>
 
-        <section className={styles.mainGrid} aria-label="Status operasional admin">
-          <Card className={styles.attendanceCard}>
+        <section className={styles.operationalGrid} aria-label="Area operasional utama">
+          <Card className={styles.readinessCard}>
             <div className={styles.cardHeader}>
               <div>
-                <span className={styles.sectionEyebrow}>Absensi</span>
-                <h2>Kehadiran Hari Ini</h2>
-              </div>
-              <Link className={styles.textLink} href="/dashboard/admin/rekap-absensi">
-                Lihat Rekap
-              </Link>
-            </div>
-
-            <div className={styles.attendanceContent}>
-              <div
-                className={styles.attendanceRing}
-                style={{ "--ring-value": `${attendancePercent}%` } as CSSProperties}
-              >
-                <span>{attendancePercent}%</span>
-                <small>Hadir</small>
-              </div>
-              <div className={styles.attendanceRows}>
-                {attendanceSummary.length > 0 ? (
-                  attendanceSummary.map((item) => (
-                    <div className={styles.attendanceRow} key={item.status}>
-                      <span>{item.status}</span>
-                      <strong>{item._count._all}</strong>
-                    </div>
-                  ))
-                ) : (
-                  <div className={styles.emptyNote}>
-                    Belum ada catatan absensi untuk hari ini.
-                  </div>
-                )}
-              </div>
-            </div>
-          </Card>
-
-          <Card className={styles.periodCard}>
-            <div className={styles.cardHeader}>
-              <div>
-                <span className={styles.sectionEyebrow}>Periode Akademik</span>
-                <h2>Periode Aktif</h2>
-              </div>
-              <Badge tone={activeYear && activeSemester ? "success" : "warning"}>
-                {activeYear && activeSemester ? "Aktif" : "Perlu dicek"}
-              </Badge>
-            </div>
-            <div className={styles.periodGrid}>
-              <div className={styles.periodBox}>
-                <span>Tahun Ajaran</span>
-                <strong>{activeYear?.name || "Belum diatur"}</strong>
-                <small>
-                  {formatDate(activeYear?.startDate)} - {formatDate(activeYear?.endDate)}
-                </small>
-              </div>
-              <div className={styles.periodBox}>
-                <span>Semester</span>
-                <strong>{activeSemester?.name || "Belum diatur"}</strong>
-                <small>
-                  {formatDate(activeSemester?.startDate)} - {formatDate(activeSemester?.endDate)}
-                </small>
-              </div>
-            </div>
-            <Link className={styles.primaryAction} href="/dashboard/admin/data-master/tahun-ajaran">
-              Kelola Tahun Ajaran & Semester
-              <DashboardIcon name="chevronRight" />
-            </Link>
-          </Card>
-        </section>
-
-        <section className={styles.lowerGrid} aria-label="Aksi dan kesiapan data">
-          <Card>
-            <div className={styles.cardHeader}>
-              <div>
-                <span className={styles.sectionEyebrow}>Akses Cepat</span>
-                <h2>Tindakan Operasional</h2>
-              </div>
-            </div>
-            <div className={styles.quickGrid}>
-              {quickActions.map((action) => (
-                <Link className={styles.quickAction} href={action.href} key={action.href}>
-                  <DashboardIcon name={action.icon} />
-                  <span>{action.label}</span>
-                  <DashboardIcon className={styles.cardArrow} name="chevronRight" />
-                </Link>
-              ))}
-            </div>
-          </Card>
-
-          <Card>
-            <div className={styles.cardHeader}>
-              <div>
-                <span className={styles.sectionEyebrow}>Kesiapan Data</span>
-                <h2>Fondasi Operasional</h2>
+                <span className={styles.sectionEyebrow}>Kesiapan Operasional</span>
+                <h2>Fondasi Data Sekolah</h2>
               </div>
             </div>
             <div className={styles.readinessList}>
               {readiness.map((item) => (
                 <Link className={styles.readinessItem} href={item.href} key={item.label}>
-                  <span>
-                    <strong>{item.label}</strong>
-                    <small>{item.value}</small>
+                  <span className={styles.readinessStatus} data-ready={item.ready}>
+                    <DashboardIcon name={item.ready ? "check" : "chevronRight"} />
                   </span>
-                  <Badge tone={item.tone}>{item.tone === "success" ? "Siap" : "Cek"}</Badge>
+                  <span className={styles.readinessCopy}>
+                    <strong>{item.label}</strong>
+                    <small>{item.summary}</small>
+                  </span>
+                  <Badge tone={item.ready ? "success" : "warning"}>
+                    {item.ready ? "Siap" : "Cek"}
+                  </Badge>
                 </Link>
               ))}
-              <div className={styles.readinessItem}>
-                <span>
-                  <strong>Mata pelajaran</strong>
-                  <small>{activeSubjects > 0 ? `${activeSubjects} mapel` : "Kosong"}</small>
-                </span>
-                <Badge tone={activeSubjects > 0 ? "success" : "warning"}>
-                  {activeSubjects > 0 ? "Siap" : "Cek"}
-                </Badge>
-              </div>
             </div>
           </Card>
+
+          <Card>
+            <div className={styles.cardHeader}>
+              <div>
+                <span className={styles.sectionEyebrow}>Absensi</span>
+                <h2>Ringkasan Hari Ini</h2>
+              </div>
+              <Link className={styles.textLink} href="/dashboard/admin/rekap-absensi">
+                Lihat rekap
+              </Link>
+            </div>
+            {attendanceTotal > 0 ? (
+              <div className={styles.attendanceList}>
+                {(["HADIR", "IZIN", "SAKIT", "ALPHA", "TERLAMBAT"] as AttendanceStatus[]).map(
+                  (status) => (
+                    <div className={styles.attendanceRow} key={status}>
+                      <span>{formatAttendanceStatus(status)}</span>
+                      <strong>{attendanceCounts.get(status) || 0}</strong>
+                    </div>
+                  ),
+                )}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                Ringkasan absensi akan tersedia setelah modul pertemuan dan absensi digunakan.
+              </div>
+            )}
+          </Card>
         </section>
+
+        <section className={styles.lowerGrid} aria-label="Informasi harian">
+          <Card>
+            <div className={styles.cardHeader}>
+              <div>
+                <span className={styles.sectionEyebrow}>Jadwal</span>
+                <h2>Jadwal Mengajar Hari Ini</h2>
+              </div>
+            </div>
+            {meetingSlots.length > 0 ? (
+              <div className={styles.scheduleList}>
+                {meetingSlots.map((slot) => (
+                  <div className={styles.scheduleItem} key={slot.label}>
+                    <strong>{slot.label}</strong>
+                    <span>{slot.rombels.size} rombel</span>
+                    <Badge tone={getSlotStatus(slot.startTime, slot.endTime) === "Berlangsung" ? "info" : "neutral"}>
+                      {getSlotStatus(slot.startTime, slot.endTime)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                Jadwal mengajar hari ini belum tersedia dari pertemuan yang tercatat.
+              </div>
+            )}
+          </Card>
+
+          <Card>
+            <div className={styles.cardHeader}>
+              <div>
+                <span className={styles.sectionEyebrow}>Kehadiran</span>
+                <h2>Siswa Tidak Hadir Hari Ini</h2>
+              </div>
+            </div>
+            {absentStudents.length > 0 ? (
+              <div className={styles.absentList}>
+                {absentStudents.map((attendance) => (
+                  <div className={styles.absentItem} key={attendance.id}>
+                    <span>
+                      <strong>
+                        {attendance.student.user.profile?.fullName ||
+                          attendance.student.user.username}
+                      </strong>
+                      <small>{attendance.rombel.name}</small>
+                    </span>
+                    <Badge tone={attendance.status === "TERLAMBAT" ? "warning" : "danger"}>
+                      {formatAttendanceStatus(attendance.status as AttendanceStatus)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                Daftar siswa tidak hadir akan muncul setelah absensi hari ini diisi.
+              </div>
+            )}
+          </Card>
+        </section>
+
+        <Card className={styles.quickCard}>
+          <div className={styles.cardHeader}>
+            <div>
+              <span className={styles.sectionEyebrow}>Aksi Cepat</span>
+              <h2>Tindakan Prioritas</h2>
+            </div>
+          </div>
+          <div className={styles.quickGrid}>
+            {quickActions.map((action) => (
+              <Link className={styles.quickAction} href={action.href} key={action.href}>
+                <DashboardIcon name={action.icon} />
+                <span>{action.label}</span>
+                <DashboardIcon className={styles.cardArrow} name="chevronRight" />
+              </Link>
+            ))}
+          </div>
+        </Card>
       </div>
     </DashboardLayout>
   );

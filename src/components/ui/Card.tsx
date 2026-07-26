@@ -20,7 +20,7 @@ export function Card({ children, footer, header, padded = true, style, ...props 
       style={{
         background: tokens.color.surface,
         border: `1px solid ${tokens.color.border}`,
-        borderRadius: tokens.radius.md,
+        borderRadius: tokens.radius.sm,
         boxShadow: tokens.shadow.card,
         overflow: "hidden",
         ...style,

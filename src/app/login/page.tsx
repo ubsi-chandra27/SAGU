@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Badge, Button } from "@/components/ui";
+import { Badge, Button, useToast } from "@/components/ui";
 import {
   DEFAULT_LOGIN_BRANDING,
   LoginBranding,
@@ -97,6 +97,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { showToast } = useToast();
 
   useEffect(() => {
     let active = true;
@@ -141,15 +142,34 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setError(data.message || "Login gagal. Periksa kembali kredensial Anda.");
+        const message = data.message || "Login gagal. Periksa kembali kredensial Anda.";
+        setError(message);
+        showToast({
+          description: message,
+          title: "Login gagal",
+          tone: "danger",
+        });
         setLoading(false);
         return;
       }
 
       const role = data.data.user.role.toLowerCase();
+      window.sessionStorage.setItem(
+        "sagu:login-success",
+        JSON.stringify({
+          name: data.data.user.fullName || data.data.user.username || "",
+          role: data.data.user.role,
+        }),
+      );
       router.push(`/dashboard/${role}`);
     } catch {
-      setError("Terjadi kesalahan jaringan. Coba beberapa saat lagi.");
+      const message = "Terjadi kesalahan jaringan. Coba beberapa saat lagi.";
+      setError(message);
+      showToast({
+        description: message,
+        title: "Login gagal",
+        tone: "danger",
+      });
       setLoading(false);
     }
   }

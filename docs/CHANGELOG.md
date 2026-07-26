@@ -4,6 +4,25 @@
 
 Dokumen ini mencatat setiap perubahan signifikan pada proyek SAGU berdasarkan versi dan tanggal.
 
+## 2026-07-26 - Penyempurnaan Visual Dashboard Admin Shadcn Space
+
+### Added
+
+- Toast login sukses satu kali setelah redirect ke dashboard ADMIN/GURU.
+- Screenshot runtime Dashboard Admin dan toast login di `docs/screenshots/dashboard-shadcn-space/`.
+- Dokumentasi adopsi selektif Shadcn Space di `docs/SHADCN_SPACE_ADOPTION.md`.
+
+### Changed
+
+- Dashboard Admin disusun ulang menjadi ringkasan utama, kesiapan operasional, ringkasan absensi jujur, jadwal aktual, siswa tidak hadir aktual, dan aksi cepat terbatas ke route nyata.
+- Sidebar dashboard memakai pola Data Master collapsible dan visual shell yang lebih ringan.
+- Upload runtime di `public/uploads/` diabaikan oleh Git agar file upload lokal tidak ikut commit.
+
+### Validation
+
+- Toast ADMIN dan GURU tampil setelah login dan tidak muncul lagi setelah refresh.
+- Screenshot viewport 1440, 1280, 1024, 768, 390, dan 360 menunjukkan tidak ada horizontal overflow.
+
 ## 2026-07-26 - Penutupan Verifikasi Dashboard Admin
 
 ### Changed

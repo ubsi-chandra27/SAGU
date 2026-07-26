@@ -113,3 +113,13 @@ MVP tidak mencakup:
 - Status push GitHub penutupan: push berhasil setelah timeout eksekusi diperpanjang; `origin/main` sudah memuat commit penutupan Dashboard Admin.
 - Keputusan verifikasi: HTTP 200 pada route bukan bukti modul lengkap. Modul dinyatakan lengkap hanya jika CRUD, database, API, RBAC, dan pengujiannya terbukti.
 - Prioritas berikutnya tetap Absensi Operasional MVP dan audit Data Master minimum untuk absensi; Jurnal Mengajar belum menjadi prioritas berikutnya.
+
+## Status Terkini - 2026-07-26 (Penyempurnaan Visual Shadcn Space)
+
+- Dashboard Admin disempurnakan dengan pola visual Shadcn Space secara selektif: shell ringan, sidebar putih, Data Master collapsible, card ringkas, grid asimetris, dan empty state yang jujur.
+- Tidak ada dependency baru. SAGU tetap memakai Next.js 14, React 18, CSS Modules, Prisma 5, dan komponen UI internal.
+- Toast login sukses ditampilkan satu kali setelah pengguna tiba di dashboard tujuan melalui flag non-sensitif `sessionStorage` `sagu:login-success`; flag langsung dihapus setelah toast tampil.
+- Pesan toast ADMIN: `Login berhasil. Selamat datang, Administrator.` Pesan toast GURU memakai nama guru dari response login.
+- Screenshot runtime disimpan di `docs/screenshots/dashboard-shadcn-space/` untuk viewport 1440, 1280, 1024, 768, 390, 360, sidebar collapsed, mobile drawer, toast admin, dan toast guru.
+- Hasil visual runtime: semua viewport yang diuji tidak memiliki horizontal overflow; drawer mobile terbuka; toast login tidak muncul lagi setelah refresh.
+- Perubahan ini tidak mengubah JWT, cookie auth, middleware, RBAC, route, Prisma schema, Tahun Ajaran/Semester, atau topbar periode aktif.

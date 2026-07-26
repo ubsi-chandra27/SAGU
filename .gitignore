@@ -6,4 +6,5 @@ dist/
 coverage/
 *.log
 *.tsbuildinfo
+public/uploads/
 prisma/test_write.txt

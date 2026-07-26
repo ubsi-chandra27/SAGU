@@ -2,7 +2,8 @@
 
 import type { CSSProperties, FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Badge, Button, Card, Input } from "@/components/ui";
+import { DashboardIcon } from "@/components/dashboard/dashboard-icons";
+import { Badge, Button, Card, Input, useToast } from "@/components/ui";
 import { tokens } from "@/styles/tokens";
 import styles from "./academic-period-manager.module.css";
 
@@ -34,11 +35,6 @@ type YearForm = {
 };
 
 type SemesterForm = YearForm;
-
-type Message = {
-  text: string;
-  tone: "success" | "danger" | "info";
-} | null;
 
 type ArchiveRequest =
   | { item: AcademicYear; type: "year" }
@@ -106,11 +102,13 @@ export function AcademicPeriodManager() {
   const [editingSemesterId, setEditingSemesterId] = useState<string | null>(null);
   const [yearForm, setYearForm] = useState<YearForm>(emptyYearForm);
   const [semesterForm, setSemesterForm] = useState<SemesterForm>(emptySemesterForm);
+  const [yearFormOpen, setYearFormOpen] = useState(false);
+  const [semesterFormOpen, setSemesterFormOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
-  const [message, setMessage] = useState<Message>(null);
   const [archiveRequest, setArchiveRequest] = useState<ArchiveRequest>(null);
+  const { showToast } = useToast();
 
   const selectedYear = useMemo(
     () => academicYears.find((year) => year.id === selectedYearId) || null,
@@ -141,21 +139,25 @@ export function AcademicPeriodManager() {
   useEffect(() => {
     loadPeriods().catch((error) => {
       setLoading(false);
-      setMessage({
+      showToast({
+        description:
+          error instanceof Error ? error.message : "Data periode gagal dimuat.",
+        title: "Data periode gagal dimuat",
         tone: "danger",
-        text: error instanceof Error ? error.message : "Data periode gagal dimuat.",
       });
     });
-  }, [loadPeriods]);
+  }, [loadPeriods, showToast]);
 
   function resetYearForm() {
     setEditingYearId(null);
     setYearForm(emptyYearForm);
+    setYearFormOpen(false);
   }
 
   function resetSemesterForm() {
     setEditingSemesterId(null);
     setSemesterForm(emptySemesterForm);
+    setSemesterFormOpen(false);
   }
 
   function refreshActivePeriod() {
@@ -169,7 +171,6 @@ export function AcademicPeriodManager() {
   async function handleYearSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
-    setMessage(null);
 
     try {
       if (editingYearId) {
@@ -177,14 +178,22 @@ export function AcademicPeriodManager() {
           body: JSON.stringify(yearForm),
           method: "PUT",
         });
-        setMessage({ tone: "success", text: "Tahun ajaran berhasil diperbarui." });
+        showToast({
+          description: "Tahun ajaran berhasil diperbarui.",
+          title: "Perubahan tersimpan",
+          tone: "success",
+        });
       } else {
         const created = await requestJson<AcademicYear>("/api/v1/tahun-ajaran", {
           body: JSON.stringify(yearForm),
           method: "POST",
         });
         setSelectedYearId(created.id);
-        setMessage({ tone: "success", text: "Tahun ajaran berhasil dibuat." });
+        showToast({
+          description: "Tahun ajaran berhasil dibuat.",
+          title: "Data berhasil ditambahkan",
+          tone: "success",
+        });
       }
 
       const nextSelectedId = editingYearId || selectedYearId;
@@ -192,9 +201,11 @@ export function AcademicPeriodManager() {
       await loadPeriods(nextSelectedId);
       if (yearForm.isActive) refreshActivePeriod();
     } catch (error) {
-      setMessage({
+      showToast({
+        description:
+          error instanceof Error ? error.message : "Tahun ajaran gagal disimpan.",
+        title: "Tahun ajaran gagal disimpan",
         tone: "danger",
-        text: error instanceof Error ? error.message : "Tahun ajaran gagal disimpan.",
       });
     } finally {
       setSaving(false);
@@ -206,7 +217,6 @@ export function AcademicPeriodManager() {
     if (!selectedYear) return;
 
     setSaving(true);
-    setMessage(null);
 
     const payload = {
       ...semesterForm,
@@ -219,22 +229,31 @@ export function AcademicPeriodManager() {
           body: JSON.stringify(payload),
           method: "PUT",
         });
-        setMessage({ tone: "success", text: "Semester berhasil diperbarui." });
+        showToast({
+          description: "Semester berhasil diperbarui.",
+          title: "Perubahan tersimpan",
+          tone: "success",
+        });
       } else {
         await requestJson<Semester>("/api/v1/semester", {
           body: JSON.stringify(payload),
           method: "POST",
         });
-        setMessage({ tone: "success", text: "Semester berhasil dibuat." });
+        showToast({
+          description: "Semester berhasil dibuat.",
+          title: "Data berhasil ditambahkan",
+          tone: "success",
+        });
       }
 
       resetSemesterForm();
       await loadPeriods(selectedYear.id);
       if (semesterForm.isActive) refreshActivePeriod();
     } catch (error) {
-      setMessage({
+      showToast({
+        description: error instanceof Error ? error.message : "Semester gagal disimpan.",
+        title: "Semester gagal disimpan",
         tone: "danger",
-        text: error instanceof Error ? error.message : "Semester gagal disimpan.",
       });
     } finally {
       setSaving(false);
@@ -243,6 +262,7 @@ export function AcademicPeriodManager() {
 
   function startEditYear(year: AcademicYear) {
     setEditingYearId(year.id);
+    setYearFormOpen(true);
     setYearForm({
       endDate: year.endDate,
       isActive: year.isActive,
@@ -253,6 +273,7 @@ export function AcademicPeriodManager() {
 
   function startEditSemester(semester: Semester) {
     setEditingSemesterId(semester.id);
+    setSemesterFormOpen(true);
     setSemesterForm({
       endDate: semester.endDate,
       isActive: semester.isActive,
@@ -263,7 +284,6 @@ export function AcademicPeriodManager() {
 
   async function activateYear(year: AcademicYear) {
     setSaving(true);
-    setMessage(null);
 
     try {
       await requestJson<AcademicYear>(`/api/v1/tahun-ajaran/${year.id}/activate`, {
@@ -271,11 +291,17 @@ export function AcademicPeriodManager() {
       });
       await loadPeriods(year.id);
       refreshActivePeriod();
-      setMessage({ tone: "success", text: `${year.name} berhasil diaktifkan.` });
+      showToast({
+        description: `${year.name} berhasil diaktifkan.`,
+        title: "Tahun ajaran aktif",
+        tone: "success",
+      });
     } catch (error) {
-      setMessage({
+      showToast({
+        description:
+          error instanceof Error ? error.message : "Tahun ajaran gagal diaktifkan.",
+        title: "Aktivasi gagal",
         tone: "danger",
-        text: error instanceof Error ? error.message : "Tahun ajaran gagal diaktifkan.",
       });
     } finally {
       setSaving(false);
@@ -284,7 +310,6 @@ export function AcademicPeriodManager() {
 
   async function activateSemester(semester: Semester) {
     setSaving(true);
-    setMessage(null);
 
     try {
       await requestJson<Semester>(`/api/v1/semester/${semester.id}/activate`, {
@@ -292,11 +317,17 @@ export function AcademicPeriodManager() {
       });
       await loadPeriods(semester.academicYearId);
       refreshActivePeriod();
-      setMessage({ tone: "success", text: `${semester.name} berhasil diaktifkan.` });
+      showToast({
+        description: `${semester.name} berhasil diaktifkan.`,
+        title: "Semester aktif",
+        tone: "success",
+      });
     } catch (error) {
-      setMessage({
+      showToast({
+        description:
+          error instanceof Error ? error.message : "Semester gagal diaktifkan.",
+        title: "Aktivasi gagal",
         tone: "danger",
-        text: error instanceof Error ? error.message : "Semester gagal diaktifkan.",
       });
     } finally {
       setSaving(false);
@@ -314,7 +345,6 @@ export function AcademicPeriodManager() {
   async function confirmArchive() {
     if (!archiveRequest) return;
     setSaving(true);
-    setMessage(null);
 
     try {
       if (archiveRequest.type === "year") {
@@ -324,7 +354,11 @@ export function AcademicPeriodManager() {
         });
         await loadPeriods();
         refreshActivePeriod();
-        setMessage({ tone: "success", text: `${year.name} berhasil diarsipkan.` });
+        showToast({
+          description: `${year.name} berhasil diarsipkan.`,
+          title: "Data berhasil diarsipkan",
+          tone: "success",
+        });
       } else {
         const semester = archiveRequest.item;
         await requestJson<Semester>(`/api/v1/semester/${semester.id}`, {
@@ -332,7 +366,11 @@ export function AcademicPeriodManager() {
         });
         await loadPeriods(semester.academicYearId);
         refreshActivePeriod();
-        setMessage({ tone: "success", text: `${semester.name} berhasil diarsipkan.` });
+        showToast({
+          description: `${semester.name} berhasil diarsipkan.`,
+          title: "Data berhasil diarsipkan",
+          tone: "success",
+        });
       }
 
       setArchiveRequest(null);
@@ -341,9 +379,10 @@ export function AcademicPeriodManager() {
         archiveRequest.type === "year"
           ? "Tahun ajaran gagal diarsipkan."
           : "Semester gagal diarsipkan.";
-      setMessage({
+      showToast({
+        description: error instanceof Error ? error.message : fallback,
+        title: "Arsip gagal",
         tone: "danger",
-        text: error instanceof Error ? error.message : fallback,
       });
     } finally {
       setSaving(false);
@@ -352,91 +391,53 @@ export function AcademicPeriodManager() {
 
   return (
     <div className={styles.manager} style={cssVars}>
-      {message ? (
-        <div className={styles.message} role="status">
-          <Badge tone={message.tone}>{message.text}</Badge>
+      <Card className={styles.commandPanel}>
+        <div className={styles.commandCopy}>
+          <span className={styles.sectionEyebrow}>Periode akademik</span>
+          <h2 className={styles.sectionTitle}>Tahun Ajaran dan Semester</h2>
+          <p className={styles.sectionDescription}>
+            Atur periode aktif yang akan dipakai dashboard, absensi, dan data operasional.
+          </p>
         </div>
-      ) : null}
+        <div className={styles.commandActions}>
+          <label className={styles.checkboxLabel}>
+            <input
+              checked={showArchived}
+              disabled={saving || loading}
+              onChange={(event) => toggleArchived(event.target.checked)}
+              type="checkbox"
+            />
+            Tampilkan arsip
+          </label>
+          <Button
+            onClick={() => {
+              setEditingYearId(null);
+              setYearForm(emptyYearForm);
+              setYearFormOpen(true);
+            }}
+            type="button"
+          >
+            <DashboardIcon name="plus" />
+            Tambah Tahun Ajaran
+          </Button>
+          <Button
+            disabled={!selectedYear || Boolean(selectedYear.deletedAt)}
+            onClick={() => {
+              setEditingSemesterId(null);
+              setSemesterForm(emptySemesterForm);
+              setSemesterFormOpen(true);
+            }}
+            type="button"
+            variant="outline"
+          >
+            <DashboardIcon name="plus" />
+            Tambah Semester
+          </Button>
+        </div>
+      </Card>
 
       <div className={styles.panelGrid}>
-        <Card>
-          <form className={styles.form} onSubmit={handleYearSubmit}>
-            <div>
-              <h2 className={styles.sectionTitle}>
-                {editingYearId ? "Ubah Tahun Ajaran" : "Tambah Tahun Ajaran"}
-              </h2>
-              <p className={styles.sectionDescription}>
-                Gunakan format nama singkat seperti 2026/2027.
-              </p>
-            </div>
-            <div className={styles.formGrid}>
-              <Input
-                disabled={saving}
-                label="Nama tahun ajaran"
-                maxLength={20}
-                onChange={(event) =>
-                  setYearForm((current) => ({ ...current, name: event.target.value }))
-                }
-                required
-                value={yearForm.name}
-              />
-              <Input
-                disabled={saving}
-                label="Tanggal mulai"
-                onChange={(event) =>
-                  setYearForm((current) => ({
-                    ...current,
-                    startDate: event.target.value,
-                  }))
-                }
-                required
-                type="date"
-                value={yearForm.startDate}
-              />
-              <Input
-                disabled={saving}
-                label="Tanggal selesai"
-                onChange={(event) =>
-                  setYearForm((current) => ({ ...current, endDate: event.target.value }))
-                }
-                required
-                type="date"
-                value={yearForm.endDate}
-              />
-              <label className={styles.checkboxLabel}>
-                <input
-                  checked={yearForm.isActive}
-                  disabled={saving}
-                  onChange={(event) =>
-                    setYearForm((current) => ({
-                      ...current,
-                      isActive: event.target.checked,
-                    }))
-                  }
-                  type="checkbox"
-                />
-                Jadikan tahun ajaran aktif
-              </label>
-            </div>
-            <div className={styles.actions}>
-              <Button disabled={saving} type="submit" variant="primary">
-                {saving ? "Menyimpan..." : editingYearId ? "Simpan Perubahan" : "Tambah"}
-              </Button>
-              {editingYearId ? (
-                <Button
-                  disabled={saving}
-                  onClick={resetYearForm}
-                  type="button"
-                  variant="outline"
-                >
-                  Batal
-                </Button>
-              ) : null}
-            </div>
-          </form>
-        </Card>
-
-        <Card>
+        <Card className={styles.tableCard}>
           <div className={styles.cardStack}>
             <div className={styles.tableHeader}>
               <div>
@@ -445,15 +446,6 @@ export function AcademicPeriodManager() {
                   Pilih tahun ajaran untuk mengelola semester di dalamnya.
                 </p>
               </div>
-              <label className={styles.checkboxLabel}>
-                <input
-                  checked={showArchived}
-                  disabled={saving || loading}
-                  onChange={(event) => toggleArchived(event.target.checked)}
-                  type="checkbox"
-                />
-                Tampilkan arsip
-              </label>
             </div>
 
             {loading ? (
@@ -505,35 +497,35 @@ export function AcademicPeriodManager() {
                           <div className={styles.rowActions}>
                             {!year.deletedAt ? (
                               <>
-                                <Button
+                                <button
+                                  aria-label={`Ubah tahun ajaran ${year.name}`}
+                                  className={styles.iconButton}
                                   disabled={saving}
                                   onClick={() => startEditYear(year)}
-                                  size="sm"
                                   type="button"
-                                  variant="outline"
                                 >
-                                  Ubah
-                                </Button>
+                                  <DashboardIcon name="edit" />
+                                </button>
                                 {!year.isActive ? (
-                                  <Button
+                                  <button
+                                    aria-label={`Aktifkan tahun ajaran ${year.name}`}
+                                    className={`${styles.iconButton} ${styles.successIcon}`}
                                     disabled={saving}
                                     onClick={() => activateYear(year)}
-                                    size="sm"
                                     type="button"
-                                    variant="secondary"
                                   >
-                                    Aktifkan
-                                  </Button>
+                                    <DashboardIcon name="check" />
+                                  </button>
                                 ) : null}
-                                <Button
+                                <button
+                                  aria-label={`Arsipkan tahun ajaran ${year.name}`}
+                                  className={`${styles.iconButton} ${styles.dangerIcon}`}
                                   disabled={saving}
                                   onClick={() => archiveYear(year)}
-                                  size="sm"
                                   type="button"
-                                  variant="ghost"
                                 >
-                                  Arsipkan
-                                </Button>
+                                  <DashboardIcon name="archive" />
+                                </button>
                               </>
                             ) : (
                               <Badge tone="neutral">Sudah arsip</Badge>
@@ -551,16 +543,8 @@ export function AcademicPeriodManager() {
       </div>
 
       <div className={styles.panelGrid}>
-        <Card>
-          <form className={styles.form} onSubmit={handleSemesterSubmit}>
-            <div>
-              <h2 className={styles.sectionTitle}>
-                {editingSemesterId ? "Ubah Semester" : "Tambah Semester"}
-              </h2>
-              <p className={styles.sectionDescription}>
-                Semester harus berada dalam rentang tahun ajaran yang dipilih.
-              </p>
-            </div>
+        <Card className={styles.selectorCard}>
+          <div className={styles.cardStack}>
             <label className={styles.selectField}>
               <span>Tahun ajaran</span>
               <select
@@ -579,92 +563,20 @@ export function AcademicPeriodManager() {
                 ))}
               </select>
             </label>
-            <div className={styles.formGrid}>
-              <Input
-                disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
-                label="Nama semester"
-                maxLength={10}
-                onChange={(event) =>
-                  setSemesterForm((current) => ({
-                    ...current,
-                    name: event.target.value,
-                  }))
-                }
-                required
-                value={semesterForm.name}
-              />
-              <Input
-                disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
-                label="Tanggal mulai"
-                max={selectedYear?.endDate}
-                min={selectedYear?.startDate}
-                onChange={(event) =>
-                  setSemesterForm((current) => ({
-                    ...current,
-                    startDate: event.target.value,
-                  }))
-                }
-                required
-                type="date"
-                value={semesterForm.startDate}
-              />
-              <Input
-                disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
-                label="Tanggal selesai"
-                max={selectedYear?.endDate}
-                min={selectedYear?.startDate}
-                onChange={(event) =>
-                  setSemesterForm((current) => ({
-                    ...current,
-                    endDate: event.target.value,
-                  }))
-                }
-                required
-                type="date"
-                value={semesterForm.endDate}
-              />
-              <label className={styles.checkboxLabel}>
-                <input
-                  checked={semesterForm.isActive}
-                  disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
-                  onChange={(event) =>
-                    setSemesterForm((current) => ({
-                      ...current,
-                      isActive: event.target.checked,
-                    }))
-                  }
-                  type="checkbox"
-                />
-                Jadikan semester aktif
-              </label>
+            <div className={styles.selectedSummary}>
+              <span>Status tahun ajaran</span>
+              <strong>{selectedYear?.name || "Belum ada pilihan"}</strong>
+              <small>
+                {selectedYear
+                  ? `${formatDate(selectedYear.startDate)} - ${formatDate(selectedYear.endDate)}`
+                  : "Tambahkan tahun ajaran terlebih dahulu."}
+              </small>
+              {selectedYear ? periodStatus(selectedYear.deletedAt, selectedYear.isActive) : null}
             </div>
-            <div className={styles.actions}>
-              <Button
-                disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
-                type="submit"
-                variant="primary"
-              >
-                {saving
-                  ? "Menyimpan..."
-                  : editingSemesterId
-                    ? "Simpan Perubahan"
-                    : "Tambah"}
-              </Button>
-              {editingSemesterId ? (
-                <Button
-                  disabled={saving}
-                  onClick={resetSemesterForm}
-                  type="button"
-                  variant="outline"
-                >
-                  Batal
-                </Button>
-              ) : null}
-            </div>
-          </form>
+          </div>
         </Card>
 
-        <Card>
+        <Card className={styles.tableCard}>
           <div className={styles.cardStack}>
             <div className={styles.semesterHeader}>
               <div>
@@ -710,35 +622,35 @@ export function AcademicPeriodManager() {
                           <div className={styles.rowActions}>
                             {!semester.deletedAt && !selectedYear.deletedAt ? (
                               <>
-                                <Button
+                                <button
+                                  aria-label={`Ubah semester ${semester.name}`}
+                                  className={styles.iconButton}
                                   disabled={saving}
                                   onClick={() => startEditSemester(semester)}
-                                  size="sm"
                                   type="button"
-                                  variant="outline"
                                 >
-                                  Ubah
-                                </Button>
+                                  <DashboardIcon name="edit" />
+                                </button>
                                 {!semester.isActive ? (
-                                  <Button
+                                  <button
+                                    aria-label={`Aktifkan semester ${semester.name}`}
+                                    className={`${styles.iconButton} ${styles.successIcon}`}
                                     disabled={saving}
                                     onClick={() => activateSemester(semester)}
-                                    size="sm"
                                     type="button"
-                                    variant="secondary"
                                   >
-                                    Aktifkan
-                                  </Button>
+                                    <DashboardIcon name="check" />
+                                  </button>
                                 ) : null}
-                                <Button
+                                <button
+                                  aria-label={`Arsipkan semester ${semester.name}`}
+                                  className={`${styles.iconButton} ${styles.dangerIcon}`}
                                   disabled={saving}
                                   onClick={() => archiveSemester(semester)}
-                                  size="sm"
                                   type="button"
-                                  variant="ghost"
                                 >
-                                  Arsipkan
-                                </Button>
+                                  <DashboardIcon name="archive" />
+                                </button>
                               </>
                             ) : (
                               <Badge tone="neutral">Sudah arsip</Badge>
@@ -754,6 +666,223 @@ export function AcademicPeriodManager() {
           </div>
         </Card>
       </div>
+
+      {yearFormOpen ? (
+        <div className={styles.dialogBackdrop} role="presentation">
+          <div aria-modal="true" className={styles.dialog} role="dialog">
+            <div className={styles.dialogHeader}>
+              <div>
+                <span>{editingYearId ? "Ubah periode" : "Tambah periode"}</span>
+                <h2 className={styles.sectionTitle}>
+                  {editingYearId ? "Ubah Tahun Ajaran" : "Tambah Tahun Ajaran"}
+                </h2>
+                <p className={styles.sectionDescription}>
+                  Gunakan format nama singkat seperti 2026/2027.
+                </p>
+              </div>
+              <button
+                aria-label="Tutup form tahun ajaran"
+                className={styles.iconButton}
+                onClick={resetYearForm}
+                type="button"
+              >
+                <DashboardIcon name="close" />
+              </button>
+            </div>
+            <form className={styles.form} onSubmit={handleYearSubmit}>
+              <div className={styles.formGrid}>
+                <Input
+                  disabled={saving}
+                  label="Nama tahun ajaran"
+                  maxLength={20}
+                  onChange={(event) =>
+                    setYearForm((current) => ({ ...current, name: event.target.value }))
+                  }
+                  required
+                  value={yearForm.name}
+                />
+                <Input
+                  disabled={saving}
+                  label="Tanggal mulai"
+                  onChange={(event) =>
+                    setYearForm((current) => ({
+                      ...current,
+                      startDate: event.target.value,
+                    }))
+                  }
+                  required
+                  type="date"
+                  value={yearForm.startDate}
+                />
+                <Input
+                  disabled={saving}
+                  label="Tanggal selesai"
+                  onChange={(event) =>
+                    setYearForm((current) => ({ ...current, endDate: event.target.value }))
+                  }
+                  required
+                  type="date"
+                  value={yearForm.endDate}
+                />
+                <label className={styles.checkboxLabel}>
+                  <input
+                    checked={yearForm.isActive}
+                    disabled={saving}
+                    onChange={(event) =>
+                      setYearForm((current) => ({
+                        ...current,
+                        isActive: event.target.checked,
+                      }))
+                    }
+                    type="checkbox"
+                  />
+                  Jadikan tahun ajaran aktif
+                </label>
+              </div>
+              <div className={styles.actions}>
+                <Button disabled={saving} type="submit" variant="primary">
+                  {saving ? "Menyimpan..." : editingYearId ? "Simpan Perubahan" : "Tambah"}
+                </Button>
+                <Button
+                  disabled={saving}
+                  onClick={resetYearForm}
+                  type="button"
+                  variant="outline"
+                >
+                  Batal
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      {semesterFormOpen ? (
+        <div className={styles.dialogBackdrop} role="presentation">
+          <div aria-modal="true" className={styles.dialog} role="dialog">
+            <div className={styles.dialogHeader}>
+              <div>
+                <span>{editingSemesterId ? "Ubah periode" : "Tambah periode"}</span>
+                <h2 className={styles.sectionTitle}>
+                  {editingSemesterId ? "Ubah Semester" : "Tambah Semester"}
+                </h2>
+                <p className={styles.sectionDescription}>
+                  Semester harus berada dalam rentang tahun ajaran yang dipilih.
+                </p>
+              </div>
+              <button
+                aria-label="Tutup form semester"
+                className={styles.iconButton}
+                onClick={resetSemesterForm}
+                type="button"
+              >
+                <DashboardIcon name="close" />
+              </button>
+            </div>
+            <form className={styles.form} onSubmit={handleSemesterSubmit}>
+              <label className={styles.selectField}>
+                <span>Tahun ajaran</span>
+                <select
+                  disabled={saving || academicYears.length === 0}
+                  onChange={(event) => {
+                    setSelectedYearId(event.target.value);
+                    resetSemesterForm();
+                    setSemesterFormOpen(true);
+                  }}
+                  value={selectedYearId}
+                >
+                  {academicYears.map((year) => (
+                    <option key={year.id} value={year.id}>
+                      {year.name}
+                      {year.deletedAt ? " (arsip)" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className={styles.formGrid}>
+                <Input
+                  disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
+                  label="Nama semester"
+                  maxLength={10}
+                  onChange={(event) =>
+                    setSemesterForm((current) => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
+                  }
+                  required
+                  value={semesterForm.name}
+                />
+                <Input
+                  disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
+                  label="Tanggal mulai"
+                  max={selectedYear?.endDate}
+                  min={selectedYear?.startDate}
+                  onChange={(event) =>
+                    setSemesterForm((current) => ({
+                      ...current,
+                      startDate: event.target.value,
+                    }))
+                  }
+                  required
+                  type="date"
+                  value={semesterForm.startDate}
+                />
+                <Input
+                  disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
+                  label="Tanggal selesai"
+                  max={selectedYear?.endDate}
+                  min={selectedYear?.startDate}
+                  onChange={(event) =>
+                    setSemesterForm((current) => ({
+                      ...current,
+                      endDate: event.target.value,
+                    }))
+                  }
+                  required
+                  type="date"
+                  value={semesterForm.endDate}
+                />
+                <label className={styles.checkboxLabel}>
+                  <input
+                    checked={semesterForm.isActive}
+                    disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
+                    onChange={(event) =>
+                      setSemesterForm((current) => ({
+                        ...current,
+                        isActive: event.target.checked,
+                      }))
+                    }
+                    type="checkbox"
+                  />
+                  Jadikan semester aktif
+                </label>
+              </div>
+              <div className={styles.actions}>
+                <Button
+                  disabled={saving || !selectedYear || Boolean(selectedYear.deletedAt)}
+                  type="submit"
+                  variant="primary"
+                >
+                  {saving
+                    ? "Menyimpan..."
+                    : editingSemesterId
+                      ? "Simpan Perubahan"
+                      : "Tambah"}
+                </Button>
+                <Button
+                  disabled={saving}
+                  onClick={resetSemesterForm}
+                  type="button"
+                  variant="outline"
+                >
+                  Batal
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       {archiveRequest ? (
         <div

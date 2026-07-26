@@ -81,6 +81,7 @@ export function Button({
         boxShadow: variant === "primary" ? `0 8px 18px ${withAlpha(tokens.color.primary, 0.18)}` : "none",
         cursor: disabled ? "not-allowed" : "pointer",
         display: "inline-flex",
+        gap: tokens.spacing.sm,
         justifyContent: "center",
         opacity: disabled ? 0.64 : 1,
         textDecoration: "none",

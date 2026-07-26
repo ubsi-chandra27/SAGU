@@ -4,9 +4,9 @@ SAGU adalah aplikasi web SaaS untuk membantu administrasi guru dan sekolah. Proy
 
 ## Status
 
-Fase saat ini: Tahap 3 - Implementasi Auth Foundation.
+Fase saat ini: Tahap 3 - Stabilitas dashboard dan Absensi Operasional MVP.
 
-Fondasi autentikasi dan otorisasi sudah diimplementasikan: JWT + RBAC, halaman login, API auth, middleware proteksi route, dan dashboard placeholder untuk Admin dan Guru.
+Fondasi autentikasi dan otorisasi sudah berjalan: JWT + RBAC, halaman login, API auth, middleware proteksi route, dashboard Admin/Guru, branding login, Data Master periode akademik, Data Master minimum, dan modul absensi operasional awal.
 
 ## Menjalankan Aplikasi
 

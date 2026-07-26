@@ -1,7 +1,8 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { Badge, Button, Card, Input } from "@/components/ui";
+import { Badge, Button, Card, Input, useToast } from "@/components/ui";
+import { DashboardIcon } from "@/components/dashboard/dashboard-icons";
 import { PageHeader, RoleBadge } from "@/components/dashboard/dashboard-widgets";
 import styles from "./master-data-page.module.css";
 
@@ -214,16 +215,18 @@ async function fetchJson<T>(url: string, init?: RequestInit) {
 
 export function MasterDataPage({ entity }: { entity: EntityKey }) {
   const config = configs[entity];
+  const entityLabel = config.title.replace(/^Data\s+/, "");
   const [items, setItems] = useState<unknown[]>([]);
   const [refs, setRefs] = useState<Record<string, unknown[]>>(staticOptions);
   const [form, setForm] = useState<Record<string, string | boolean>>(emptyForm(config.fields));
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ text: string; tone: "danger" | "success" | "info" } | null>(null);
   const [pendingArchive, setPendingArchive] = useState<unknown | null>(null);
+  const { showToast } = useToast();
 
   const optionSources = useMemo(
     () => [...new Set(config.fields.map((field) => field.optionSource).filter(Boolean))] as string[],
@@ -239,7 +242,11 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
       const data = await fetchJson<unknown[]>(`${config.endpoint}?${query.toString()}`);
       setItems(data);
     } catch (error) {
-      setMessage({ tone: "danger", text: error instanceof Error ? error.message : "Data gagal dimuat" });
+      showToast({
+        description: error instanceof Error ? error.message : "Data gagal dimuat",
+        title: "Gagal memuat data",
+        tone: "danger",
+      });
     } finally {
       setLoading(false);
     }
@@ -258,7 +265,11 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
   useEffect(() => {
     loadData();
     loadRefs().catch((error) => {
-      setMessage({ tone: "danger", text: error instanceof Error ? error.message : "Referensi gagal dimuat" });
+      showToast({
+        description: error instanceof Error ? error.message : "Referensi gagal dimuat",
+        title: "Referensi gagal dimuat",
+        tone: "danger",
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entity, showArchived]);
@@ -279,17 +290,24 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
     });
     setEditingId(String(getValue(item, "id")));
     setForm(next);
+    setFormOpen(true);
+  }
+
+  function startCreate() {
+    setEditingId(null);
+    setForm(emptyForm(config.fields));
+    setFormOpen(true);
   }
 
   function resetForm() {
     setEditingId(null);
     setForm(emptyForm(config.fields));
+    setFormOpen(false);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
-    setMessage(null);
 
     try {
       const payload = Object.fromEntries(
@@ -300,12 +318,22 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
         body: JSON.stringify(payload),
         method: editingId ? "PUT" : "POST",
       });
-      setMessage({ tone: "success", text: editingId ? "Data berhasil diperbarui" : "Data berhasil dibuat" });
+      showToast({
+        description: editingId
+          ? `${config.title} berhasil diperbarui.`
+          : `${config.title} berhasil ditambahkan.`,
+        title: editingId ? "Perubahan tersimpan" : "Data berhasil ditambahkan",
+        tone: "success",
+      });
       resetForm();
       await loadData();
       await loadRefs();
     } catch (error) {
-      setMessage({ tone: "danger", text: error instanceof Error ? error.message : "Data gagal disimpan" });
+      showToast({
+        description: error instanceof Error ? error.message : "Data gagal disimpan",
+        title: "Data gagal disimpan",
+        tone: "danger",
+      });
     } finally {
       setSaving(false);
     }
@@ -316,11 +344,19 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
     setSaving(true);
     try {
       await fetchJson(`${config.endpoint}/${getValue(pendingArchive, "id")}`, { method: "DELETE" });
-      setMessage({ tone: "success", text: "Data berhasil diarsipkan" });
+      showToast({
+        description: `${config.title} berhasil diarsipkan.`,
+        title: "Data berhasil diarsipkan",
+        tone: "success",
+      });
       setPendingArchive(null);
       await loadData();
     } catch (error) {
-      setMessage({ tone: "danger", text: error instanceof Error ? error.message : "Data gagal diarsipkan" });
+      showToast({
+        description: error instanceof Error ? error.message : "Data gagal diarsipkan",
+        title: "Data gagal diarsipkan",
+        tone: "danger",
+      });
     } finally {
       setSaving(false);
     }
@@ -334,47 +370,33 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
         title={config.title}
       />
 
-      {message ? (
-        <Card>
-          <div className={styles.message}>
-            <Badge tone={message.tone}>{message.text}</Badge>
-            <Button onClick={() => setMessage(null)} size="sm" variant="ghost">Tutup</Button>
-          </div>
-        </Card>
-      ) : null}
-
-      <Card>
-        <form className={styles.stack} onSubmit={handleSubmit}>
-          <div className={styles.grid}>
-            {config.fields.map((field) => (
-              <FormField
-                field={field}
-                isEditing={Boolean(editingId)}
-                key={field.name}
-                onChange={(value) => updateField(field, value)}
-                refs={refs}
-                value={form[field.name]}
-              />
-            ))}
-          </div>
-          <div className={styles.actions}>
-            <Button disabled={saving} type="submit">{saving ? "Menyimpan..." : editingId ? "Simpan Perubahan" : "Tambah"}</Button>
-            {editingId ? <Button disabled={saving} onClick={resetForm} variant="outline">Batal</Button> : null}
-          </div>
-        </form>
-      </Card>
-
       {entity === "students" ? <StudentImportPanel onImported={loadData} /> : null}
 
       <Card>
         <div className={styles.stack}>
           <div className={styles.toolbar}>
-            <Input label="Cari" onChange={(event) => setSearch(event.target.value)} value={search} />
-            <label className={styles.checkbox}>
+            <div className={styles.searchField}>
+              <DashboardIcon name="search" />
+              <Input
+                label="Cari data"
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={`Cari ${config.title.toLowerCase()}...`}
+                value={search}
+              />
+            </div>
+            <label className={styles.filterToggle}>
               <input checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} type="checkbox" />
+              <DashboardIcon name="filter" />
               Tampilkan arsip
             </label>
-            <Button disabled={loading} onClick={loadData} variant="outline">Muat</Button>
+            <Button disabled={loading} onClick={loadData} variant="outline">
+              <DashboardIcon name="filter" />
+              Terapkan
+            </Button>
+            <Button onClick={startCreate}>
+              <DashboardIcon name="plus" />
+              Tambah {entityLabel}
+            </Button>
           </div>
 
           {loading ? (
@@ -398,10 +420,26 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
                         {config.columns.map((column) => <td key={column.path}>{displayValue(item, column.path)}</td>)}
                         <td><Badge tone={getValue(item, "deletedAt") ? "neutral" : "success"}>{getValue(item, "deletedAt") ? "Arsip" : "Aktif"}</Badge></td>
                         <td>
-                          <div className={styles.actions}>
-                            <Button onClick={() => startEdit(item)} size="sm" variant="outline">Ubah</Button>
+                          <div className={styles.rowActions}>
+                            <button
+                              aria-label={`Ubah ${entityLabel}`}
+                              className={styles.iconButton}
+                              onClick={() => startEdit(item)}
+                              title="Ubah"
+                              type="button"
+                            >
+                              <DashboardIcon name="edit" />
+                            </button>
                             {!getValue(item, "deletedAt") ? (
-                              <Button onClick={() => setPendingArchive(item)} size="sm" variant="ghost">Arsip</Button>
+                              <button
+                                aria-label={`Arsipkan ${entityLabel}`}
+                                className={`${styles.iconButton} ${styles.dangerIcon}`}
+                                onClick={() => setPendingArchive(item)}
+                                title="Arsipkan"
+                                type="button"
+                              >
+                                <DashboardIcon name="archive" />
+                              </button>
                             ) : null}
                           </div>
                         </td>
@@ -418,9 +456,15 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
                       <div key={column.path}><strong>{column.label}:</strong> {displayValue(item, column.path)}</div>
                     ))}
                     <div className={styles.actions}>
-                      <Button onClick={() => startEdit(item)} size="sm" variant="outline">Ubah</Button>
+                      <Button onClick={() => startEdit(item)} size="sm" variant="outline">
+                        <DashboardIcon name="edit" />
+                        Ubah
+                      </Button>
                       {!getValue(item, "deletedAt") ? (
-                        <Button onClick={() => setPendingArchive(item)} size="sm" variant="ghost">Arsip</Button>
+                        <Button onClick={() => setPendingArchive(item)} size="sm" variant="ghost">
+                          <DashboardIcon name="archive" />
+                          Arsip
+                        </Button>
                       ) : null}
                     </div>
                   </div>
@@ -431,12 +475,58 @@ export function MasterDataPage({ entity }: { entity: EntityKey }) {
         </div>
       </Card>
 
+      {formOpen ? (
+        <div className={styles.dialogBackdrop} role="presentation">
+          <div aria-modal="true" className={styles.formDialog} role="dialog">
+            <div className={styles.dialogHeader}>
+              <div>
+                <span>{editingId ? "Ubah data" : "Tambah data"}</span>
+                <h2>{editingId ? `Ubah ${entityLabel}` : `Tambah ${entityLabel}`}</h2>
+              </div>
+              <button
+                aria-label="Tutup form"
+                className={styles.iconButton}
+                onClick={resetForm}
+                type="button"
+              >
+                <DashboardIcon name="close" />
+              </button>
+            </div>
+            <form className={styles.formStack} onSubmit={handleSubmit}>
+              <div className={styles.grid}>
+                {config.fields.map((field) => (
+                  <FormField
+                    field={field}
+                    isEditing={Boolean(editingId)}
+                    key={field.name}
+                    onChange={(value) => updateField(field, value)}
+                    refs={refs}
+                    value={form[field.name]}
+                  />
+                ))}
+              </div>
+              <div className={styles.dialogActions}>
+                <Button disabled={saving} type="submit">
+                  {saving ? "Menyimpan..." : editingId ? "Simpan Perubahan" : `Tambah ${entityLabel}`}
+                </Button>
+                <Button disabled={saving} onClick={resetForm} variant="outline">
+                  Batal
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
       {pendingArchive ? (
         <div className={styles.dialogBackdrop} role="presentation">
           <div aria-modal="true" className={styles.dialog} role="dialog">
-            <h2>Konfirmasi arsip</h2>
+            <div className={styles.alertIcon}>
+              <DashboardIcon name="archive" />
+            </div>
+            <h2>Arsipkan {entityLabel}?</h2>
             <p>Data akan disembunyikan dari daftar operasional, tetapi tidak dihapus permanen.</p>
-            <div className={styles.actions}>
+            <div className={styles.dialogActions}>
               <Button disabled={saving} onClick={archiveItem} variant="danger">Arsipkan</Button>
               <Button disabled={saving} onClick={() => setPendingArchive(null)} variant="outline">Batal</Button>
             </div>
@@ -527,6 +617,7 @@ function StudentImportPanel({ onImported }: { onImported: () => Promise<void> })
   } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
   async function previewFile() {
     if (!file) return;
@@ -543,7 +634,9 @@ function StudentImportPanel({ onImported }: { onImported: () => Promise<void> })
       if (!response.ok || !payload.success) throw new Error(payload.message || "Preview gagal");
       setPreview(payload.data);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Preview import gagal");
+      const description = error instanceof Error ? error.message : "Preview import gagal";
+      setMessage(description);
+      showToast({ description, title: "Preview import gagal", tone: "danger" });
     } finally {
       setSaving(false);
     }
@@ -559,11 +652,18 @@ function StudentImportPanel({ onImported }: { onImported: () => Promise<void> })
         method: "POST",
       });
       setMessage("Import siswa berhasil disimpan");
+      showToast({
+        description: "Data siswa dari CSV berhasil disimpan.",
+        title: "Import siswa berhasil",
+        tone: "success",
+      });
       setPreview(null);
       setFile(null);
       await onImported();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Import gagal disimpan");
+      const description = error instanceof Error ? error.message : "Import gagal disimpan";
+      setMessage(description);
+      showToast({ description, title: "Import gagal disimpan", tone: "danger" });
     } finally {
       setSaving(false);
     }

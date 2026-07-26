@@ -1,13 +1,68 @@
 .stack {
   display: grid;
-  gap: 24px;
+  gap: 18px;
+}
+
+.stack h2 {
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 26px;
+  margin: 0;
+}
+
+.stack p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 22px;
+  margin: 6px 0 0;
 }
 
 .toolbar {
   align-items: end;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(260px, 1fr) auto auto auto;
+  padding: 12px;
+}
+
+.searchField {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.searchField > svg {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #2563eb;
+  height: 44px;
+  padding: 11px;
+  width: 44px;
+}
+
+.filterToggle {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #0f172a;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 650;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.filterToggle input {
+  height: 16px;
+  width: 16px;
 }
 
 .grid {
@@ -41,6 +96,13 @@
   width: 100%;
 }
 
+.field select:focus,
+.field textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  outline: none;
+}
+
 .field textarea {
   min-height: 88px;
   resize: vertical;
@@ -53,20 +115,49 @@
   min-height: 44px;
 }
 
-.actions {
+.actions,
+.rowActions,
+.dialogActions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.message {
+.rowActions {
+  flex-wrap: nowrap;
+}
+
+.iconButton {
   align-items: center;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #2563eb;
+  cursor: pointer;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  transition: 150ms ease;
+  width: 36px;
+}
+
+.iconButton:hover {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+}
+
+.dangerIcon {
+  color: #ef4444;
+}
+
+.dangerIcon:hover {
+  background: #fee2e2;
+  border-color: #fecaca;
 }
 
 .tableWrap {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   overflow-x: auto;
 }
 
@@ -87,7 +178,12 @@
   vertical-align: top;
 }
 
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
 .table th {
+  background: #f8fafc;
   color: #64748b;
   font-size: 12px;
   font-weight: 700;
@@ -103,6 +199,17 @@
   text-align: center;
 }
 
+.actions input[type="file"] {
+  align-self: center;
+  background: #fff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 13px;
+  min-height: 44px;
+  padding: 10px;
+}
+
 .dialogBackdrop {
   align-items: center;
   background: rgba(15, 23, 42, 0.36);
@@ -114,26 +221,78 @@
   z-index: 80;
 }
 
-.dialog {
+.dialog,
+.formDialog {
   background: #fff;
-  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
   display: grid;
   gap: 16px;
   max-width: 420px;
-  padding: 20px;
+  padding: 24px;
   width: 100%;
 }
 
+.formDialog {
+  max-height: min(720px, calc(100vh - 40px));
+  max-width: 760px;
+  overflow: auto;
+}
+
+.dialogHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.dialogHeader span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 18px;
+  text-transform: uppercase;
+}
+
 .dialog h2 {
+  color: #0f172a;
   font-size: 20px;
   line-height: 28px;
   margin: 0;
+  text-align: center;
+}
+
+.dialogHeader h2 {
+  text-align: left;
 }
 
 .dialog p {
   color: #64748b;
+  line-height: 22px;
   margin: 0;
+  text-align: center;
+}
+
+.formStack {
+  display: grid;
+  gap: 18px;
+}
+
+.dialogActions {
+  justify-content: flex-end;
+}
+
+.alertIcon {
+  align-items: center;
+  background: #fee2e2;
+  border-radius: 9999px;
+  color: #ef4444;
+  display: inline-flex;
+  height: 54px;
+  justify-content: center;
+  justify-self: center;
+  width: 54px;
 }
 
 .importRows {
@@ -144,6 +303,7 @@
 }
 
 .importRow {
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   display: grid;
@@ -158,6 +318,14 @@
 @media (max-width: 720px) {
   .toolbar {
     grid-template-columns: 1fr;
+  }
+
+  .searchField {
+    grid-template-columns: 1fr;
+  }
+
+  .searchField > svg {
+    display: none;
   }
 
   .tableWrap {
@@ -175,5 +343,9 @@
     display: grid;
     gap: 8px;
     padding: 12px;
+  }
+
+  .dialogActions {
+    display: grid;
   }
 }
