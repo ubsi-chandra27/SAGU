@@ -1,43 +1,101 @@
+import Link from "next/link";
+import { cookies } from "next/headers";
 import DashboardLayout from "@/components/dashboard/dashboard-layout";
-import { Badge, Card } from "@/components/ui";
+import {
+  DashboardEmptyState,
+  PageHeader,
+  RoleBadge,
+  StatCard,
+} from "@/components/dashboard/dashboard-widgets";
+import { Button } from "@/components/ui";
+import { verifyAccessToken } from "@/lib/auth/jwt";
+import prisma from "@/lib/prisma";
 import { tokens } from "@/styles/tokens";
 
-export default function GuruDashboardPage() {
+const guruNextStates = [
+  {
+    title: "Jadwal mengajar belum tersedia",
+    description: "Jadwal akan muncul setelah penugasan guru dan rombel dibuat.",
+    icon: "calendar" as const,
+  },
+  {
+    title: "Belum ada pertemuan hari ini",
+    description: "Tombol mulai pertemuan akan tersedia setelah jadwal aktif dibuat.",
+    icon: "school" as const,
+  },
+  {
+    title: "Absensi menunggu jadwal",
+    description: "Absensi akan tersedia setelah jadwal dan penugasan mengajar dibuat.",
+    icon: "clipboard" as const,
+  },
+  {
+    title: "Jurnal mengajar belum tersedia",
+    description: "Jurnal mengajar akan muncul setelah pertemuan kelas dibuat.",
+    icon: "book" as const,
+  },
+];
+
+function currentUserId() {
+  const token = cookies().get("access_token")?.value;
+  if (!token) return null;
+  try {
+    return verifyAccessToken(token).sub;
+  } catch {
+    return null;
+  }
+}
+
+export default async function GuruDashboardPage() {
+  const userId = currentUserId();
+  const teacher = userId
+    ? await prisma.teacher.findFirst({ where: { userId, deletedAt: null } })
+    : null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [assignmentCount, meetingsToday, doneToday, unfinishedToday] = teacher
+    ? await Promise.all([
+        prisma.teachingAssignment.count({ where: { teacherId: teacher.id, deletedAt: null } }),
+        prisma.meeting.count({
+          where: { deletedAt: null, meetingDate: today, teachingAssignment: { teacherId: teacher.id } },
+        }),
+        prisma.meeting.count({
+          where: {
+            attendances: { some: { deletedAt: null } },
+            deletedAt: null,
+            meetingDate: today,
+            teachingAssignment: { teacherId: teacher.id },
+          },
+        }),
+        prisma.meeting.count({
+          where: {
+            attendances: { none: { deletedAt: null } },
+            deletedAt: null,
+            meetingDate: today,
+            teachingAssignment: { teacherId: teacher.id },
+          },
+        }),
+      ])
+    : [0, 0, 0, 0];
+
   const stats = [
-    { label: "Mata Pelajaran", value: "1", tone: "info" as const },
-    { label: "Rombel", value: "1", tone: "success" as const },
-    { label: "Pertemuan", value: "2", tone: "warning" as const },
-    { label: "Siswa", value: "1", tone: "info" as const },
+    { label: "Penugasan", value: String(assignmentCount), description: "Penugasan mengajar aktif." },
+    { label: "Pertemuan Hari Ini", value: String(meetingsToday), description: "Pertemuan bertanggal hari ini." },
+    { label: "Absensi Selesai", value: String(doneToday), description: "Pertemuan hari ini sudah punya absensi." },
+    { label: "Belum Absensi", value: String(unfinishedToday), description: "Pertemuan hari ini belum punya absensi." },
   ];
 
   return (
     <DashboardLayout role="guru">
       <div style={{ display: "grid", gap: tokens.spacing["2xl"] }}>
-        <header>
-          <Badge tone="success">Guru</Badge>
-          <h1
-            style={{
-              color: tokens.color.textPrimary,
-              fontSize: tokens.typography.heading1.fontSize,
-              lineHeight: tokens.typography.heading1.lineHeight,
-              margin: `${tokens.spacing.md} 0 ${tokens.spacing.xs}`,
-            }}
-          >
-            Dashboard Guru
-          </h1>
-          <p
-            style={{
-              color: tokens.color.textSecondary,
-              fontSize: tokens.typography.body.fontSize,
-              lineHeight: tokens.typography.body.lineHeight,
-              margin: 0,
-            }}
-          >
-            Ringkasan awal untuk mata pelajaran, rombel, pertemuan, dan siswa.
-          </p>
-        </header>
+        <PageHeader
+          badge={<RoleBadge tone="success">Guru</RoleBadge>}
+          description="Ringkasan penugasan dan absensi dari database."
+          title="Dashboard Guru"
+        />
 
-        <div
+        <section
+          aria-label="Statistik guru"
           style={{
             display: "grid",
             gap: tokens.spacing.lg,
@@ -45,22 +103,38 @@ export default function GuruDashboardPage() {
           }}
         >
           {stats.map((item) => (
-            <Card key={item.label}>
-              <div style={{ display: "grid", gap: tokens.spacing.sm }}>
-                <Badge tone={item.tone}>{item.label}</Badge>
-                <strong
-                  style={{
-                    color: tokens.color.primary,
-                    fontSize: tokens.typography.display.fontSize,
-                    lineHeight: tokens.typography.display.lineHeight,
-                  }}
-                >
-                  {item.value}
-                </strong>
-              </div>
-            </Card>
+            <StatCard
+              description={item.description}
+              key={item.label}
+              label={item.label}
+              value={item.value}
+            />
           ))}
-        </div>
+        </section>
+
+        <section style={{ display: "flex", flexWrap: "wrap", gap: tokens.spacing.sm }}>
+          <Link href="/dashboard/guru/pertemuan"><Button>Mulai Pertemuan</Button></Link>
+          <Link href="/dashboard/guru/pertemuan"><Button variant="outline">Lanjutkan Absensi</Button></Link>
+          <Link href="/dashboard/guru/pertemuan"><Button variant="ghost">Lihat Rekap</Button></Link>
+        </section>
+
+        <section
+          aria-label="Status alur lanjutan guru"
+          style={{
+            display: "grid",
+            gap: tokens.spacing.lg,
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          }}
+        >
+          {guruNextStates.map((item) => (
+            <DashboardEmptyState
+              description={item.description}
+              icon={item.icon}
+              key={item.title}
+              title={item.title}
+            />
+          ))}
+        </section>
       </div>
     </DashboardLayout>
   );

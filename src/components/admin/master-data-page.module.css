@@ -1,0 +1,179 @@
+.stack {
+  display: grid;
+  gap: 24px;
+}
+
+.toolbar {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span,
+.checkbox {
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.field select,
+.field textarea {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.field textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.checkbox {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.message {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  min-width: 760px;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid #e5e7eb;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 22px;
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.empty {
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+  border-radius: 8px;
+  color: #64748b;
+  padding: 24px;
+  text-align: center;
+}
+
+.dialogBackdrop {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.36);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 80;
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
+  display: grid;
+  gap: 16px;
+  max-width: 420px;
+  padding: 20px;
+  width: 100%;
+}
+
+.dialog h2 {
+  font-size: 20px;
+  line-height: 28px;
+  margin: 0;
+}
+
+.dialog p {
+  color: #64748b;
+  margin: 0;
+}
+
+.importRows {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.importRow {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.mobileCards {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .tableWrap {
+    display: none;
+  }
+
+  .mobileCards {
+    display: grid;
+    gap: 12px;
+  }
+
+  .mobileCard {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+  }
+}

@@ -87,3 +87,16 @@ MVP tidak mencakup:
 - Quality gate terakhir untuk modul periode akademik: Prisma validate PASS, Prisma generate PASS, TypeScript PASS, lint PASS, dan build PASS.
 - Tahap berikutnya adalah Absensi Operasional MVP.
 - Periode aktif di database harus dikonfirmasi dengan periode sekolah sebenarnya sebelum dipakai untuk operasional nyata.
+
+## Status Terkini - 2026-07-26 (Absensi Operasional MVP)
+
+- Modul Absensi Operasional MVP sudah selesai pada kode lokal: Data Master Mata Pelajaran, Data Guru, Data Siswa, Kelas, Rombel, Penugasan Mengajar, Pertemuan Guru, Absensi Cepat per pertemuan, Rekap Absensi Admin, dan halaman cetak.
+- Route UI Admin yang tersedia: `/dashboard/admin/data-master/mata-pelajaran`, `/dashboard/admin/data-master/guru`, `/dashboard/admin/data-master/siswa`, `/dashboard/admin/data-master/kelas`, `/dashboard/admin/data-master/rombel`, `/dashboard/admin/data-master/penugasan-mengajar`, `/dashboard/admin/rekap-absensi`, `/dashboard/admin/rekap-absensi/cetak`, dan `/dashboard/admin/rekap-absensi/pertemuan/[meetingId]/cetak`.
+- Route UI Guru yang tersedia: `/dashboard/guru/pertemuan`, `/dashboard/guru/pertemuan/[meetingId]/absensi`, dan `/dashboard/guru/pertemuan/[meetingId]/absensi/cetak`.
+- Route API Admin yang tersedia untuk sprint ini: `/api/v1/admin/master/subjects`, `/teachers`, `/classes`, `/rombels`, `/students`, `/students/template`, `/students/import-preview`, `/students/import-commit`, `/teaching-assignments`, `/api/v1/admin/attendance/recap`, dan `/api/v1/admin/attendance/meetings/[id]`.
+- Route API Guru yang tersedia: `/api/v1/guru/assignments`, `/api/v1/guru/meetings`, `/api/v1/guru/meetings/[id]`, dan `/api/v1/guru/meetings/[id]/attendance`.
+- Absensi sekarang dikunci per siswa dan per pertemuan melalui `Attendance.meetingId` dengan unique `studentId + meetingId`; migration `20260726103000_attendance_per_meeting` sudah diterapkan di database lokal.
+- Aturan operasional: Guru hanya dapat membuat pertemuan dan mengisi absensi untuk penugasan miliknya; Admin dapat mengelola data master dan membaca rekap; pengguna tanpa login diarahkan ke `/login`; role yang salah ditolak atau diarahkan oleh middleware/API handler.
+- Quality gate sprint Absensi Operasional MVP: `prisma validate`, `prisma generate`, `tsc --noEmit`, `npm run lint`, dan `npm run build` PASS pada 2026-07-26.
+- Data uji runtime sprint sudah di-soft-delete/dinonaktifkan setelah verifikasi. Periode aktif tetap harus dikonfirmasi dengan periode sekolah sebenarnya sebelum dipakai operasional nyata.
+- Tahap berikutnya: Jurnal Mengajar operasional dan penajaman laporan absensi lintas role sesuai kebutuhan sekolah.

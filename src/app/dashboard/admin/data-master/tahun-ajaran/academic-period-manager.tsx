@@ -40,6 +40,11 @@ type Message = {
   tone: "success" | "danger" | "info";
 } | null;
 
+type ArchiveRequest =
+  | { item: AcademicYear; type: "year" }
+  | { item: Semester; type: "semester" }
+  | null;
+
 const emptyYearForm: YearForm = {
   endDate: "",
   isActive: false,
@@ -105,6 +110,7 @@ export function AcademicPeriodManager() {
   const [saving, setSaving] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [message, setMessage] = useState<Message>(null);
+  const [archiveRequest, setArchiveRequest] = useState<ArchiveRequest>(null);
 
   const selectedYear = useMemo(
     () => academicYears.find((year) => year.id === selectedYearId) || null,
@@ -297,50 +303,47 @@ export function AcademicPeriodManager() {
     }
   }
 
-  async function archiveYear(year: AcademicYear) {
-    if (!window.confirm(`Arsipkan tahun ajaran ${year.name}? Semester di dalamnya ikut diarsipkan.`)) {
-      return;
-    }
-
-    setSaving(true);
-    setMessage(null);
-
-    try {
-      await requestJson<AcademicYear>(`/api/v1/tahun-ajaran/${year.id}`, {
-        method: "DELETE",
-      });
-      await loadPeriods();
-      refreshActivePeriod();
-      setMessage({ tone: "success", text: `${year.name} berhasil diarsipkan.` });
-    } catch (error) {
-      setMessage({
-        tone: "danger",
-        text: error instanceof Error ? error.message : "Tahun ajaran gagal diarsipkan.",
-      });
-    } finally {
-      setSaving(false);
-    }
+  function archiveYear(year: AcademicYear) {
+    setArchiveRequest({ type: "year", item: year });
   }
 
-  async function archiveSemester(semester: Semester) {
-    if (!window.confirm(`Arsipkan semester ${semester.name}?`)) {
-      return;
-    }
+  function archiveSemester(semester: Semester) {
+    setArchiveRequest({ type: "semester", item: semester });
+  }
 
+  async function confirmArchive() {
+    if (!archiveRequest) return;
     setSaving(true);
     setMessage(null);
 
     try {
-      await requestJson<Semester>(`/api/v1/semester/${semester.id}`, {
-        method: "DELETE",
-      });
-      await loadPeriods(semester.academicYearId);
-      refreshActivePeriod();
-      setMessage({ tone: "success", text: `${semester.name} berhasil diarsipkan.` });
+      if (archiveRequest.type === "year") {
+        const year = archiveRequest.item;
+        await requestJson<AcademicYear>(`/api/v1/tahun-ajaran/${year.id}`, {
+          method: "DELETE",
+        });
+        await loadPeriods();
+        refreshActivePeriod();
+        setMessage({ tone: "success", text: `${year.name} berhasil diarsipkan.` });
+      } else {
+        const semester = archiveRequest.item;
+        await requestJson<Semester>(`/api/v1/semester/${semester.id}`, {
+          method: "DELETE",
+        });
+        await loadPeriods(semester.academicYearId);
+        refreshActivePeriod();
+        setMessage({ tone: "success", text: `${semester.name} berhasil diarsipkan.` });
+      }
+
+      setArchiveRequest(null);
     } catch (error) {
+      const fallback =
+        archiveRequest.type === "year"
+          ? "Tahun ajaran gagal diarsipkan."
+          : "Semester gagal diarsipkan.";
       setMessage({
         tone: "danger",
-        text: error instanceof Error ? error.message : "Semester gagal diarsipkan.",
+        text: error instanceof Error ? error.message : fallback,
       });
     } finally {
       setSaving(false);
@@ -751,6 +754,41 @@ export function AcademicPeriodManager() {
           </div>
         </Card>
       </div>
+
+      {archiveRequest ? (
+        <div
+          aria-labelledby="archive-period-title"
+          aria-modal="true"
+          className={styles.dialogBackdrop}
+          role="dialog"
+        >
+          <div className={styles.dialog}>
+            <div>
+              <h2 className={styles.sectionTitle} id="archive-period-title">
+                Konfirmasi Arsip
+              </h2>
+              <p className={styles.sectionDescription}>
+                {archiveRequest.type === "year"
+                  ? `Arsipkan tahun ajaran ${archiveRequest.item.name}? Semester di dalamnya ikut diarsipkan.`
+                  : `Arsipkan semester ${archiveRequest.item.name}?`}
+              </p>
+            </div>
+            <div className={styles.actions}>
+              <Button disabled={saving} onClick={confirmArchive} type="button" variant="danger">
+                {saving ? "Mengarsipkan..." : "Arsipkan"}
+              </Button>
+              <Button
+                disabled={saving}
+                onClick={() => setArchiveRequest(null)}
+                type="button"
+                variant="outline"
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

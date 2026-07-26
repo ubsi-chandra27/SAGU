@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="SAGU">
+  <rect width="128" height="128" rx="30" fill="#FFFFFF"/>
+  <path d="M24 42 64 20l40 22-40 22-40-22Z" fill="#2563EB"/>
+  <path d="M36 58v25c0 4 2.4 7.6 6.1 9.1L64 101l21.9-8.9A9.8 9.8 0 0 0 92 83V58L64 73.5 36 58Z" fill="#1D4ED8" opacity=".82"/>
+  <path d="M104 43v31" fill="none" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
+</svg>

@@ -2,7 +2,15 @@ export type DashboardRole = "admin" | "guru";
 
 export type DashboardNavItem = {
   href: string;
-  icon: "branding" | "calendar" | "dashboard";
+  icon:
+    | "book"
+    | "branding"
+    | "calendar"
+    | "clipboard"
+    | "dashboard"
+    | "print"
+    | "school"
+    | "user";
   label: string;
 };
 
@@ -31,9 +39,49 @@ export const dashboardNavigation: Record<DashboardRole, DashboardNavGroup[]> = {
       label: "Data Master",
       items: [
         {
+          label: "Mata Pelajaran",
+          href: "/dashboard/admin/data-master/mata-pelajaran",
+          icon: "book",
+        },
+        {
+          label: "Guru",
+          href: "/dashboard/admin/data-master/guru",
+          icon: "user",
+        },
+        {
+          label: "Siswa",
+          href: "/dashboard/admin/data-master/siswa",
+          icon: "school",
+        },
+        {
+          label: "Kelas",
+          href: "/dashboard/admin/data-master/kelas",
+          icon: "clipboard",
+        },
+        {
+          label: "Rombel",
+          href: "/dashboard/admin/data-master/rombel",
+          icon: "school",
+        },
+        {
           label: "Tahun Ajaran",
           href: "/dashboard/admin/data-master/tahun-ajaran",
           icon: "calendar",
+        },
+        {
+          label: "Penugasan Mengajar",
+          href: "/dashboard/admin/data-master/penugasan-mengajar",
+          icon: "clipboard",
+        },
+      ],
+    },
+    {
+      label: "Absensi",
+      items: [
+        {
+          label: "Rekap Absensi",
+          href: "/dashboard/admin/rekap-absensi",
+          icon: "print",
         },
       ],
     },
@@ -52,6 +100,16 @@ export const dashboardNavigation: Record<DashboardRole, DashboardNavGroup[]> = {
     {
       label: "Utama",
       items: [{ label: "Dashboard Guru", href: "/dashboard/guru", icon: "dashboard" }],
+    },
+    {
+      label: "Mengajar",
+      items: [
+        {
+          label: "Pertemuan",
+          href: "/dashboard/guru/pertemuan",
+          icon: "calendar",
+        },
+      ],
     },
   ],
 };
@@ -77,13 +135,98 @@ const dashboardPageMeta: Record<string, DashboardPageMeta> = {
       { label: "Tahun Ajaran" },
     ],
   },
+  "/dashboard/admin/data-master/mata-pelajaran": {
+    title: "Mata Pelajaran",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Data Master" },
+      { label: "Mata Pelajaran" },
+    ],
+  },
+  "/dashboard/admin/data-master/guru": {
+    title: "Data Guru",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Data Master" },
+      { label: "Guru" },
+    ],
+  },
+  "/dashboard/admin/data-master/siswa": {
+    title: "Data Siswa",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Data Master" },
+      { label: "Siswa" },
+    ],
+  },
+  "/dashboard/admin/data-master/kelas": {
+    title: "Kelas",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Data Master" },
+      { label: "Kelas" },
+    ],
+  },
+  "/dashboard/admin/data-master/rombel": {
+    title: "Rombel",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Data Master" },
+      { label: "Rombel" },
+    ],
+  },
+  "/dashboard/admin/data-master/penugasan-mengajar": {
+    title: "Penugasan Mengajar",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Data Master" },
+      { label: "Penugasan Mengajar" },
+    ],
+  },
+  "/dashboard/admin/rekap-absensi": {
+    title: "Rekap Absensi",
+    breadcrumbs: [
+      { label: "Dashboard Admin", href: "/dashboard/admin" },
+      { label: "Absensi" },
+      { label: "Rekap Absensi" },
+    ],
+  },
   "/dashboard/guru": {
     title: "Dashboard Guru",
     breadcrumbs: [{ label: "Dashboard Guru" }],
   },
+  "/dashboard/guru/pertemuan": {
+    title: "Pertemuan",
+    breadcrumbs: [
+      { label: "Dashboard Guru", href: "/dashboard/guru" },
+      { label: "Pertemuan" },
+    ],
+  },
 };
 
 export function getDashboardPageMeta(pathname: string, role: DashboardRole): DashboardPageMeta {
+  if (pathname.startsWith("/dashboard/guru/pertemuan/")) {
+    return {
+      title: pathname.includes("/cetak") ? "Cetak Absensi" : "Absensi Cepat",
+      breadcrumbs: [
+        { label: "Dashboard Guru", href: "/dashboard/guru" },
+        { label: "Pertemuan", href: "/dashboard/guru/pertemuan" },
+        { label: pathname.includes("/cetak") ? "Cetak Absensi" : "Absensi" },
+      ],
+    };
+  }
+
+  if (pathname.startsWith("/dashboard/admin/rekap-absensi/")) {
+    return {
+      title: pathname.includes("/cetak") ? "Cetak Rekap Absensi" : "Detail Rekap Absensi",
+      breadcrumbs: [
+        { label: "Dashboard Admin", href: "/dashboard/admin" },
+        { label: "Rekap Absensi", href: "/dashboard/admin/rekap-absensi" },
+        { label: pathname.includes("/cetak") ? "Cetak" : "Detail" },
+      ],
+    };
+  }
+
   return (
     dashboardPageMeta[pathname] || {
       title: role === "admin" ? "Dashboard Admin" : "Dashboard Guru",

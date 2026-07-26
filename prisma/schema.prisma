@@ -65,16 +65,21 @@ enum Predicate {
 }
 
 model School {
-  id        String    @id @default(uuid()) @db.Uuid
-  name      String    @db.VarChar(255)
-  npsn      String?   @db.VarChar(10)
-  address   String    @db.Text
-  phone     String?   @db.VarChar(15)
-  email     String?   @db.VarChar(100)
-  logoUrl   String?   @map("logo_url") @db.VarChar(255)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id                      String    @id @default(uuid()) @db.Uuid
+  name                    String    @db.VarChar(255)
+  npsn                    String?   @db.VarChar(10)
+  address                 String    @db.Text
+  phone                   String?   @db.VarChar(15)
+  email                   String?   @db.VarChar(100)
+  logoUrl                 String?   @map("logo_url") @db.VarChar(255)
+  loginBackgroundUrl      String?   @map("login_background_url") @db.VarChar(255)
+  loginTitle              String?   @map("login_title") @db.VarChar(120)
+  loginSubtitle           String?   @map("login_subtitle") @db.VarChar(255)
+  loginBackgroundPosition String    @default("center") @map("login_background_position") @db.VarChar(20)
+  loginOverlayOpacity     Float     @default(0.46) @map("login_overlay_opacity")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  deletedAt               DateTime? @map("deleted_at")
 
   settings Setting?
 
@@ -466,6 +471,7 @@ model Meeting {
   learningObjective    LearningObjective?    @relation(fields: [learningObjectiveId], references: [id])
   formativeAssessments FormativeAssessment[]
   summativeAssessments SummativeAssessment[]
+  attendances          Attendance[]
 
   @@unique([teachingAssignmentId, meetingNumber])
   @@index([teachingAssignmentId, meetingDate])
@@ -474,6 +480,7 @@ model Meeting {
 
 model Attendance {
   id             String           @id @default(uuid()) @db.Uuid
+  meetingId      String           @map("meeting_id") @db.Uuid
   studentId      String           @map("student_id") @db.Uuid
   rombelId       String           @map("rombel_id") @db.Uuid
   attendanceDate DateTime         @map("attendance_date") @db.Date
@@ -484,12 +491,14 @@ model Attendance {
   updatedAt      DateTime         @updatedAt @map("updated_at")
   deletedAt      DateTime?        @map("deleted_at")
 
+  meeting  Meeting @relation(fields: [meetingId], references: [id])
   student  Student @relation(fields: [studentId], references: [id])
   rombel   Rombel  @relation(fields: [rombelId], references: [id])
   recorder User    @relation("AttendanceRecorder", fields: [recordedById], references: [id])
 
-  @@unique([studentId, attendanceDate])
+  @@unique([studentId, meetingId])
   @@index([attendanceDate, studentId])
+  @@index([meetingId])
   @@index([rombelId])
   @@map("attendances")
 }

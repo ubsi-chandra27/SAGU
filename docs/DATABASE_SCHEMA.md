@@ -367,6 +367,7 @@ Catatan kehadiran siswa.
 |---|---|---|
 | id | UUID (PK) | Identifikasi unik absensi |
 | student_id | UUID (FK -> students.id) | Relasi ke siswa |
+| meeting_id | UUID (FK -> meetings.id) | Relasi ke pertemuan |
 | rombel_id | UUID (FK -> rombels.id) | Relasi ke rombel |
 | attendance_date | DATE | Tanggal absensi |
 | status | ENUM (AttendanceStatus) | hadir, izin, sakit, alpa, terlambat |
@@ -512,6 +513,7 @@ users (1) ──── (N) teachers
 users (1) ──── (N) students
 users (1) ──── (N) parents
 users (1) ──── (N) attendances (sebagai recorded_by)
+meetings (1) ──── (N) attendances
 users (1) ──── (N) audit_logs
 users (1) ──── (N) teaching_journals (sebagai user_id)
 users (1) ──── (N) summative_assessments (sebagai published_by)
@@ -592,7 +594,9 @@ grading_components (1) ──── (N) summative_assessments
 - `teaching_assignments.teacher_id + teaching_assignments.rombel_id` — COMPOSITE INDEX
 - `teaching_assignments.academic_year_id + teaching_assignments.semester_id` — COMPOSITE INDEX
 - `teaching_assignments.subject_id` — INDEX
-- `attendances.attendance_date + attendances.student_id` — COMPOSITE INDEX
+- `attendances.student_id + attendances.meeting_id` — UNIQUE
+- `attendances.meeting_id` — INDEX
+- `attendances.attendance_date + attendances.student_id` — COMPOSITE INDEX untuk rekap tanggal
 - `attendances.rombel_id` — INDEX
 - `meetings.teaching_assignment_id + meeting_date` — COMPOSITE INDEX
 - `teaching_journals.teaching_assignment_id + meeting_date` — COMPOSITE INDEX

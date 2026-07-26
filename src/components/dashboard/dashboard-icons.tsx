@@ -11,6 +11,7 @@ type DashboardIconName =
   | "dashboard"
   | "logout"
   | "menu"
+  | "print"
   | "school"
   | "user";
 
@@ -77,6 +78,14 @@ const paths: Record<DashboardIconName, JSX.Element> = {
       <path d="M4 7h16" />
       <path d="M4 12h16" />
       <path d="M4 17h16" />
+    </>
+  ),
+  print: (
+    <>
+      <path d="M7 9V4h10v5" />
+      <path d="M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" />
+      <path d="M7 14h10v7H7z" />
+      <path d="M17 12h.01" />
     </>
   ),
   school: (

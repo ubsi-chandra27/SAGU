@@ -180,7 +180,7 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 | curriculum_modules | teaching_assignment_id + number | LM unik per penugasan per nomor |
 | learning_objectives | curriculum_module_id + tp_number | TP unik per LM per nomor |
 | meetings | teaching_assignment_id + meeting_number | Pertemuan unik per penugasan per nomor |
-| attendances | student_id + attendance_date | Satu absensi per siswa per tanggal |
+| attendances | student_id + meeting_id | Satu absensi per siswa per pertemuan |
 | grading_components | academic_year_id + semester_id + subject_id + name | Komponen unik per mata pelajaran per periode |
 | formative_assessments | learning_objective_id + student_id + assessment_date | Satu nilai formatif per TP per siswa per tanggal |
 | summative_assessments | curriculum_module_id + student_id + grading_component_id | Satu nilai sumatif per siswa per LM per komponen |
@@ -196,6 +196,7 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 | teaching_assignments | academic_year_id + semester_id | Cek penugasan per periode |
 | teaching_assignments | subject_id | Cari penugasan berdasarkan mata pelajaran |
 | meetings | teaching_assignment_id + meeting_date | Dapatkan pertemuan per periode |
+| attendances | meeting_id | Daftar absensi per pertemuan |
 | attendances | attendance_date + student_id | Rekap absensi harian per siswa |
 | attendances | rombel_id | Daftar absensi per rombel |
 | formative_assessments | learning_objective_id + student_id | Cek nilai formatif per TP per siswa |
@@ -230,6 +231,7 @@ Semua tabel menggunakan UUID sebagai primary key dengan prefix `id`.
 2. **users → students (1:1)**: Setiap siswa memiliki tepat satu record di tabel `students` yang menghubungkan ke `users.id`.
 3. **users → parents (1:N)**: Satu pengguna orang tua dapat terhubung ke satu atau lebih siswa (orang tua beberapa anak).
 4. **homeroom_teacher_id → users.id**: Rombel menunjuk pengguna sebagai wali kelas. Pengguna ini seharusnya memiliki role `GURU` atau `WALI_KELAS`. Pembatasan role diterapkan di application layer.
-5. **attendances.recorded_by → users.id**: Siapa pun dengan role yang berwenang (Guru) dapat mencatat absensi. Pembatasan per rombel di application layer.
-6. **summative_assessments.published_by → users.id**: Guru yang mempublikasikan nilai. Di aplikasi level, hanya Guru/Wali Kelas yang boleh mempublish.
-7. **teaching_assignments adalah pusat hubungan akademik**: Semua entitas akademik (LM, TP, pertemuan, penilaian, leger) terhubung melalui teaching_assignment yang menghubungkan guru, rombel, mata pelajaran, dan periode akademik.
+5. **attendances.meeting_id → meetings.id**: Absensi operasional dicatat per pertemuan agar satu siswa dapat memiliki beberapa catatan kehadiran pada tanggal yang sama untuk penugasan berbeda.
+6. **attendances.recorded_by → users.id**: Siapa pun dengan role yang berwenang (Guru) dapat mencatat absensi. Pembatasan per rombel dan kepemilikan penugasan diterapkan di application layer.
+7. **summative_assessments.published_by → users.id**: Guru yang mempublikasikan nilai. Di aplikasi level, hanya Guru/Wali Kelas yang boleh mempublish.
+8. **teaching_assignments adalah pusat hubungan akademik**: Semua entitas akademik (LM, TP, pertemuan, penilaian, leger) terhubung melalui teaching_assignment yang menghubungkan guru, rombel, mata pelajaran, dan periode akademik.

@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyRefreshToken, generateAccessToken, generateRefreshToken, RefreshTokenPayload } from "@/lib/auth/jwt";
-import { unauthorized, internalServerError } from "@/lib/errors";
+import prisma from "@/lib/prisma";
+import { verifyRefreshToken, generateAccessToken, generateRefreshToken, AccessTokenPayload, RefreshTokenPayload } from "@/lib/auth/jwt";
+import { internalServerError, toErrorResponse, unauthorized } from "@/lib/errors";
 
 export async function POST(req: NextRequest) {
   try {
     const refreshToken = req.cookies.get("refresh_token")?.value;
 
     if (!refreshToken) {
-      return unauthorized("Refresh token tidak ditemukan");
+      return toErrorResponse(unauthorized("Refresh token tidak ditemukan"));
     }
 
     let payload: RefreshTokenPayload;
@@ -15,16 +16,31 @@ export async function POST(req: NextRequest) {
     try {
       payload = verifyRefreshToken(refreshToken);
     } catch {
-      return unauthorized("Refresh token tidak valid atau kedaluwarsa");
+      return toErrorResponse(unauthorized("Refresh token tidak valid atau kedaluwarsa"));
     }
 
-    const newAccessToken = generateAccessToken({
-      sub: payload.sub,
-      username: "",
-      email: "",
-      role: "",
-      fullName: "",
+    const user = await prisma.user.findUnique({
+      where: { id: payload.sub },
+      include: { profile: true },
     });
+
+    if (!user) {
+      return toErrorResponse(unauthorized("Refresh token tidak valid atau kedaluwarsa"));
+    }
+
+    if (!user.isActive) {
+      return toErrorResponse(unauthorized("Akun dinonaktifkan"));
+    }
+
+    const accessPayload: AccessTokenPayload = {
+      sub: payload.sub,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      fullName: user.profile?.fullName || user.username,
+    };
+
+    const newAccessToken = generateAccessToken(accessPayload);
 
     const newRefreshToken = generateRefreshToken({
       sub: payload.sub,
@@ -62,6 +78,6 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error) {
     console.error("Refresh error:", error);
-    return internalServerError("Terjadi kesalahan server");
+    return toErrorResponse(internalServerError("Terjadi kesalahan server"));
   }
 }

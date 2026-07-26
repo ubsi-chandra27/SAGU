@@ -4,6 +4,29 @@
 
 Dokumen ini mencatat setiap perubahan signifikan pada proyek SAGU berdasarkan versi dan tanggal.
 
+## 2026-07-26 - Absensi Operasional MVP
+
+### Added
+
+- Data Master minimum untuk Absensi Operasional MVP: Mata Pelajaran, Guru, Siswa, Kelas, Rombel, dan Penugasan Mengajar.
+- Import siswa berbasis CSV dengan template, preview validasi, deteksi duplikasi, dan commit data valid.
+- Alur Guru: daftar penugasan, tambah pertemuan, absensi cepat per pertemuan, simpan/edit absensi, dan cetak absensi per pertemuan.
+- Alur Admin: rekap absensi dengan filter periode/rombel/mapel/tanggal, cetak rekap, dan cetak detail per pertemuan.
+- Screenshot verifikasi visual modul Absensi MVP di `docs/screenshots/attendance-mvp/`.
+
+### Changed
+
+- Absensi menggunakan relasi `meeting_id` dan unique `student_id + meeting_id` agar pencatatan aman untuk banyak pertemuan pada tanggal yang sama.
+- Dashboard Admin dan Guru memakai ringkasan database dasar serta navigasi ke modul operasional absensi.
+
+### Validation
+
+- `npx.cmd prisma validate` PASS.
+- `npx.cmd prisma generate` PASS.
+- `npx.cmd tsc --noEmit` PASS.
+- `npm.cmd run lint` PASS.
+- `npm.cmd run build` PASS.
+
 ## Format Entri
 
 Setiap entri mencakup:

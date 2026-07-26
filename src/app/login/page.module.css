@@ -1,0 +1,383 @@
+.page {
+  background-color: var(--color-primary-soft);
+  background-repeat: no-repeat;
+  background-size: cover, cover;
+  color: var(--color-text-primary);
+  display: grid;
+  font-family: var(--font-family);
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 45vw);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.overlay {
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.12), rgba(248, 250, 252, 0.08) 45%, rgba(248, 250, 252, 0.64)),
+    rgba(15, 23, 42, var(--overlay-opacity));
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+.brandIntro,
+.formPanel {
+  position: relative;
+  z-index: 1;
+}
+
+.brandIntro {
+  align-items: flex-start;
+  display: flex;
+  min-width: 0;
+  padding: 36px 48px;
+}
+
+.brandRow {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.78);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  gap: 14px;
+  max-width: min(520px, 100%);
+  padding: 12px 16px;
+}
+
+.brandLogo,
+.formLogo,
+.logoFallback {
+  background: var(--color-surface);
+  border: 1px solid rgba(226, 232, 240, 0.82);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  height: 56px;
+  object-fit: contain;
+  padding: 8px;
+  width: 56px;
+}
+
+.logoFallback {
+  align-items: center;
+  color: var(--color-primary);
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.logoFallback svg {
+  height: 34px;
+  width: 34px;
+}
+
+.brandRow span {
+  color: #0a255c;
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 30px;
+}
+
+.brandRow strong {
+  color: var(--color-text-secondary);
+  display: block;
+  font-size: 13px;
+  line-height: 18px;
+  margin-top: 2px;
+}
+
+.formPanel {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  min-width: 0;
+  padding: 40px 56px 40px 24px;
+}
+
+.formCard {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.16);
+  max-width: 520px;
+  min-width: 0;
+  padding: 46px 48px 34px;
+  width: 100%;
+}
+
+.formBrand {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.formLogo {
+  height: 76px;
+  width: 76px;
+}
+
+.formBrand h1 {
+  color: #0a255c;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 42px;
+  margin: 16px 0 4px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.formBrand p {
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0;
+}
+
+.divider {
+  background: var(--color-divider);
+  height: 1px;
+  margin: 28px 0 30px;
+  width: 100%;
+}
+
+.formHeading {
+  text-align: center;
+}
+
+.formHeading h2 {
+  color: #0a255c;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 36px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.formHeading p {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 24px;
+  margin: 8px auto 0;
+  max-width: 360px;
+}
+
+.feedback {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.form {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.field {
+  color: var(--color-text-primary);
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.inputShell {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 16px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.inputShell:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.inputShell svg {
+  color: #7482a0;
+  flex: 0 0 auto;
+  height: 24px;
+  width: 24px;
+}
+
+.inputShell input {
+  background: transparent;
+  border: 0;
+  color: var(--color-text-primary);
+  flex: 1;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  min-width: 0;
+  outline: 0;
+  width: 100%;
+}
+
+.inputShell input::placeholder {
+  color: #8b97b1;
+}
+
+.passwordToggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 9999px;
+  color: #7482a0;
+  cursor: pointer;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  margin-right: -8px;
+  padding: 0;
+  width: 40px;
+}
+
+.passwordToggle:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  outline: 0;
+}
+
+.poweredBy {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  margin-top: 26px;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 48vw);
+  }
+
+  .brandIntro {
+    padding: 28px;
+  }
+
+  .formPanel {
+    padding: 32px 28px 32px 12px;
+  }
+
+  .formCard {
+    padding: 40px 36px 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .overlay {
+    background:
+      linear-gradient(180deg, rgba(15, 23, 42, 0.18), rgba(248, 250, 252, 0.7)),
+      rgba(15, 23, 42, var(--overlay-opacity));
+  }
+
+  .brandIntro {
+    padding: 22px 20px 0;
+  }
+
+  .brandRow {
+    max-width: calc(100vw - 40px);
+  }
+
+  .brandRow span {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .formPanel {
+    min-height: auto;
+    padding: 30px 20px 36px;
+  }
+
+  .formCard {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brandIntro {
+    justify-content: center;
+    padding: 18px 16px 0;
+  }
+
+  .brandRow {
+    border-radius: 16px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+
+  .brandLogo,
+  .logoFallback {
+    border-radius: 14px;
+    height: 48px;
+    width: 48px;
+  }
+
+  .brandRow span {
+    font-size: 18px;
+  }
+
+  .brandRow strong {
+    font-size: 12px;
+  }
+
+  .formPanel {
+    padding: 22px 16px 30px;
+  }
+
+  .formCard {
+    border-radius: 20px;
+    padding: 30px 20px 28px;
+  }
+
+  .formLogo {
+    height: 62px;
+    width: 62px;
+  }
+
+  .formBrand h1 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .formBrand p,
+  .formHeading p {
+    font-size: 14px;
+  }
+
+  .divider {
+    margin: 22px 0 24px;
+  }
+
+  .formHeading h2 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .form {
+    margin-top: 24px;
+  }
+
+  .inputShell {
+    min-height: 54px;
+    padding-left: 14px;
+    padding-right: 12px;
+  }
+}

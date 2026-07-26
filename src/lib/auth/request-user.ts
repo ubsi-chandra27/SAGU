@@ -59,3 +59,45 @@ export function requireAdmin(req: NextRequest) {
 
   return { user, response: null };
 }
+
+export function requireGuru(req: NextRequest) {
+  const user = getRequestUser(req);
+
+  if (!user) {
+    return {
+      user: null,
+      response: NextResponse.json(
+        { success: false, message: "Autentikasi diperlukan" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  if (user.role !== "GURU") {
+    return {
+      user,
+      response: NextResponse.json(
+        { success: false, message: "Akses ditolak" },
+        { status: 403 }
+      ),
+    };
+  }
+
+  return { user, response: null };
+}
+
+export function requireAuthenticated(req: NextRequest) {
+  const user = getRequestUser(req);
+
+  if (!user) {
+    return {
+      user: null,
+      response: NextResponse.json(
+        { success: false, message: "Autentikasi diperlukan" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  return { user, response: null };
+}

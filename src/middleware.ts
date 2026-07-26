@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ROLE } from "@/lib/auth/constants";
+import { verifyAccessTokenForMiddleware } from "@/lib/auth/edge-jwt";
 
 const PUBLIC_PATHS = [
   "/login",
@@ -7,18 +8,12 @@ const PUBLIC_PATHS = [
   "/api/v1/auth/refresh",
   "/api/v1/auth/logout",
   "/api/v1/auth/me",
+  "/api/v1/branding/login",
+  "/branding",
+  "/uploads/branding",
   "/_next",
   "/favicon.ico",
 ];
-
-type AccessPayload = {
-  email: string;
-  exp?: number;
-  fullName: string;
-  role: string;
-  sub: string;
-  username: string;
-};
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(
@@ -34,17 +29,13 @@ function getRoleFromPath(pathname: string): string | null {
   return null;
 }
 
-function decodeJwtPayload(token: string): AccessPayload | null {
-  const payload = token.split(".")[1];
-  if (!payload) return null;
-
-  try {
-    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
-    return JSON.parse(atob(padded)) as AccessPayload;
-  } catch {
-    return null;
+function getAccessToken(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    return authHeader.slice("Bearer ".length);
   }
+
+  return req.cookies.get("access_token")?.value;
 }
 
 function unauthorized(message: string) {
@@ -55,31 +46,55 @@ function forbidden(message: string) {
   return NextResponse.json({ success: false, message }, { status: 403 });
 }
 
-export function middleware(req: NextRequest) {
+function clearAccessToken(response: NextResponse) {
+  response.cookies.set("access_token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict" as const,
+    path: "/",
+    maxAge: 0,
+  });
+
+  return response;
+}
+
+function redirectToLogin(req: NextRequest, clearCookie = false) {
+  const response = NextResponse.redirect(new URL("/login", req.url));
+  return clearCookie ? clearAccessToken(response) : response;
+}
+
+export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
+  const accessToken = getAccessToken(req);
+
+  if (pathname === "/login") {
+    if (!accessToken) return NextResponse.next();
+
+    const payload = await verifyAccessTokenForMiddleware(accessToken);
+    if (!payload) return clearAccessToken(NextResponse.next());
+
+    return NextResponse.redirect(
+      new URL("/dashboard/" + payload.role.toLowerCase(), req.url)
+    );
+  }
 
   if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
 
-  const authHeader = req.headers.get("authorization");
-  const accessToken =
-    authHeader?.replace("Bearer ", "") || req.cookies.get("access_token")?.value;
-
   if (!accessToken) {
     if (pathname.startsWith("/api/")) {
       return unauthorized("Missing access token");
     }
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectToLogin(req);
   }
 
-  const payload = decodeJwtPayload(accessToken);
-  const now = Math.floor(Date.now() / 1000);
-  if (!payload || (payload.exp && payload.exp < now)) {
+  const payload = await verifyAccessTokenForMiddleware(accessToken);
+  if (!payload) {
     if (pathname.startsWith("/api/")) {
-      return unauthorized("Invalid or expired access token");
+      return clearAccessToken(unauthorized("Invalid or expired access token"));
     }
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectToLogin(req, true);
   }
 
   const requiredRole = getRoleFromPath(pathname);

@@ -6,4 +6,5 @@ export {
   notFound,
   validationError,
   internalServerError,
+  toErrorResponse,
 } from "./http-error";

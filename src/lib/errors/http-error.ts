@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 export class HttpError extends Error {
   constructor(
     public statusCode: number,
@@ -31,4 +33,15 @@ export function validationError(message: string, details?: unknown) {
 
 export function internalServerError(message = "Internal Server Error") {
   return new HttpError(500, message);
+}
+
+export function toErrorResponse(error: HttpError) {
+  return NextResponse.json(
+    {
+      success: false,
+      message: error.message,
+      ...(error.details ? { details: error.details } : {}),
+    },
+    { status: error.statusCode }
+  );
 }

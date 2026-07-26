@@ -638,9 +638,10 @@ async function main() {
   console.log("Meetings created/upserted");
 
   const attendance1 = await prisma.attendance.upsert({
-    where: { studentId_attendanceDate: { studentId: student.id, attendanceDate: new Date("2025-07-15") } },
+    where: { studentId_meetingId: { studentId: student.id, meetingId: meeting1.id } },
     update: {},
     create: {
+      meetingId: meeting1.id,
       studentId: student.id,
       rombelId: rombelX1.id,
       attendanceDate: new Date("2025-07-15"),
@@ -650,9 +651,10 @@ async function main() {
   });
 
   const attendance2 = await prisma.attendance.upsert({
-    where: { studentId_attendanceDate: { studentId: student.id, attendanceDate: new Date("2025-07-17") } },
+    where: { studentId_meetingId: { studentId: student.id, meetingId: meeting2.id } },
     update: {},
     create: {
+      meetingId: meeting2.id,
       studentId: student.id,
       rombelId: rombelX1.id,
       attendanceDate: new Date("2025-07-17"),

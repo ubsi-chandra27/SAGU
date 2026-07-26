@@ -141,6 +141,34 @@ Pertemuan adalah sesi pembelajaran yang direncanakan oleh guru dan dijalankan pa
 - 1 pertemuan boleh terhubung ke 1 LM atau 1 TP (atau keduanya).
 - 1 pertemuan terhubung ke 1 teaching_journal (jurnal mengajar).
 - Banyak pertemuan membentuk rangkaian pertemuan dalam 1 semester.
+- 1 pertemuan memiliki banyak catatan absensi siswa.
+
+---
+
+## 4A. Absensi Operasional per Pertemuan
+
+Absensi MVP dicatat per pertemuan mengajar, bukan hanya per tanggal. Pola ini mencegah benturan data saat satu siswa mengikuti lebih dari satu pertemuan atau mata pelajaran pada tanggal yang sama.
+
+### Entitas Absensi
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| id | UUID (PK) | Identifikasi unik absensi |
+| student_id | UUID (FK -> students.id) | Siswa yang dicatat |
+| meeting_id | UUID (FK -> meetings.id) | Pertemuan terkait |
+| rombel_id | UUID (FK -> rombels.id) | Rombel siswa saat absensi |
+| attendance_date | DATE | Tanggal absensi, mengikuti tanggal pertemuan |
+| status | ENUM | HADIR, IZIN, SAKIT, ALPHA, TERLAMBAT |
+| note | TEXT | Catatan guru (opsional) |
+| recorded_by | UUID (FK -> users.id) | Guru pencatat |
+| deleted_at | TIMESTAMP | Soft delete |
+
+### Aturan Absensi MVP
+
+- Unique operasional: `student_id + meeting_id`.
+- Saat daftar absensi dibuka pertama kali, siswa rombel ditampilkan dengan status default HADIR di UI/API, tetapi baris database baru dibuat setelah guru menyimpan.
+- Guru hanya dapat mengisi absensi untuk pertemuan dari penugasan mengajar miliknya.
+- Admin dapat membaca rekap dan mencetak absensi, tetapi pencatatan operasional dilakukan oleh Guru.
 
 ---
 

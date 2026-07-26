@@ -22,6 +22,53 @@ Route berikut sudah tersedia pada implementasi saat ini.
 | `/dashboard/guru` | Dashboard Guru | Guru |
 | `/dashboard/admin/pengaturan/branding-login` | Pengaturan branding halaman login | Admin |
 | `/dashboard/admin/data-master/tahun-ajaran` | Manajemen Tahun Ajaran dan Semester | Admin |
+| `/dashboard/admin/data-master/mata-pelajaran` | Manajemen Mata Pelajaran | Admin |
+| `/dashboard/admin/data-master/guru` | Manajemen Data Guru | Admin |
+| `/dashboard/admin/data-master/siswa` | Manajemen Data Siswa dan import CSV | Admin |
+| `/dashboard/admin/data-master/kelas` | Manajemen Kelas | Admin |
+| `/dashboard/admin/data-master/rombel` | Manajemen Rombel | Admin |
+| `/dashboard/admin/data-master/penugasan-mengajar` | Manajemen Penugasan Mengajar | Admin |
+| `/dashboard/admin/rekap-absensi` | Rekap Absensi Admin | Admin |
+| `/dashboard/admin/rekap-absensi/cetak` | Cetak rekap absensi periode/filter | Admin |
+| `/dashboard/admin/rekap-absensi/pertemuan/[meetingId]/cetak` | Cetak absensi per pertemuan | Admin |
+| `/dashboard/guru/pertemuan` | Daftar dan tambah pertemuan Guru | Guru |
+| `/dashboard/guru/pertemuan/[meetingId]/absensi` | Absensi cepat per pertemuan | Guru pemilik penugasan |
+| `/dashboard/guru/pertemuan/[meetingId]/absensi/cetak` | Cetak absensi per pertemuan | Guru pemilik penugasan |
+
+## Route API Aktual
+
+Route berikut sudah tersedia di kode saat ini dan dipakai oleh modul Data Master serta Absensi Operasional MVP.
+
+### Data Master Admin Aktual
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET, POST | `/api/v1/admin/master/subjects` | Daftar dan tambah mata pelajaran | Admin |
+| GET, PUT, DELETE | `/api/v1/admin/master/subjects/[id]` | Detail, ubah, dan arsip mata pelajaran | Admin |
+| GET, POST | `/api/v1/admin/master/teachers` | Daftar dan tambah guru beserta akun GURU | Admin |
+| GET, PUT, DELETE | `/api/v1/admin/master/teachers/[id]` | Detail, ubah, dan arsip guru | Admin |
+| GET, POST | `/api/v1/admin/master/classes` | Daftar dan tambah kelas | Admin |
+| GET, PUT, DELETE | `/api/v1/admin/master/classes/[id]` | Detail, ubah, dan arsip kelas | Admin |
+| GET, POST | `/api/v1/admin/master/rombels` | Daftar dan tambah rombel | Admin |
+| GET, PUT, DELETE | `/api/v1/admin/master/rombels/[id]` | Detail, ubah, dan arsip rombel | Admin |
+| GET, POST | `/api/v1/admin/master/students` | Daftar dan tambah siswa manual | Admin |
+| GET, PUT, DELETE | `/api/v1/admin/master/students/[id]` | Detail, ubah, dan arsip siswa | Admin |
+| GET | `/api/v1/admin/master/students/template` | Unduh template import siswa CSV | Admin |
+| POST | `/api/v1/admin/master/students/import-preview` | Validasi preview import siswa CSV | Admin |
+| POST | `/api/v1/admin/master/students/import-commit` | Simpan baris import siswa valid | Admin |
+| GET, POST | `/api/v1/admin/master/teaching-assignments` | Daftar dan tambah penugasan mengajar | Admin |
+| GET, PUT, DELETE | `/api/v1/admin/master/teaching-assignments/[id]` | Detail, ubah, dan arsip penugasan mengajar | Admin |
+
+### Absensi Operasional Aktual
+
+| Method | Route | Deskripsi | Akses |
+|---|---|---|---|
+| GET | `/api/v1/guru/assignments` | Daftar penugasan milik guru login | Guru |
+| GET, POST | `/api/v1/guru/meetings` | Daftar dan tambah pertemuan guru | Guru |
+| GET | `/api/v1/guru/meetings/[id]` | Detail pertemuan milik guru | Guru pemilik |
+| GET, PUT | `/api/v1/guru/meetings/[id]/attendance` | Ambil dan simpan absensi cepat per pertemuan | Guru pemilik |
+| GET | `/api/v1/admin/attendance/recap` | Rekap absensi dengan filter periode, rombel, mapel, tanggal | Admin |
+| GET | `/api/v1/admin/attendance/meetings/[id]` | Detail/cetak absensi satu pertemuan | Admin |
 
 ## Route Publik
 
